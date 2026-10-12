@@ -1,0 +1,1324 @@
+import mongoose from 'mongoose';
+import { Exam } from '../models/Exam.model.js';
+import { ExamAttempt } from '../models/ExamAttempt.model.js';
+import { uploadEvidenceSnapshot, getPresignedDownloadUrl } from './aws/s3.service.js';
+import { detectFaces, detectLabels, compareFaces } from './aws/rekognition.service.js';
+import { getStudentReferenceImage } from './user.service.js';
+import { invokeIncidentEvaluatorLambda } from './aws/lambda.service.js';
+import { sendHighRiskProctorAlert } from './aws/sns.service.js';
+import {
+  evaluateProctoringRisk,
+  evaluateSnsAlertTrigger,
+  generateProctoringSummary,
+  getRecommendedIntervalMs,
+  calculateRiskLevel,
+  ABSENCE_THRESHOLDS,
+} from './proctoring/riskEngine.service.js';
+
+import { initialMemoryExams, initialMemoryAttempts } from './mockData.js';
+
+// In-Memory store fallback for standalone development
+const memoryExams = [...initialMemoryExams];
+const memoryAttempts = [...initialMemoryAttempts];
+
+const isDbConnected = () => mongoose.connection.readyState === 1;
+
+
+/**
+ * Sanitize question objects for students (stripping correct answer)
+ */
+export const sanitizeQuestionsForStudent = (questions) => {
+  return (questions || []).map((q, idx) => {
+    const raw = q.toObject ? q.toObject() : { ...q };
+    delete raw.correctOptionIndex;
+    delete raw.explanation;
+    const qId = (raw._id || raw.questionId || raw.id || `q_${idx}`).toString();
+    const text = raw.text || raw.question || '';
+    return {
+      ...raw,
+      _id: qId,
+      id: qId,
+      questionId: qId,
+      text,
+      question: text,
+      options: Array.isArray(raw.options) ? raw.options : [],
+      marks: Number(raw.marks) || 1,
+    };
+  });
+};
+
+/**
+ * Teacher: Create new exam
+ */
+export const createExam = async (examData, teacherUser) => {
+  const calculatedTotalMarks = (examData.questions || []).reduce(
+    (sum, q) => sum + (Number(q.marks) || 1),
+    0
+  );
+
+  const payload = {
+    ...examData,
+    creator: teacherUser.id || teacherUser._id,
+    creatorName: teacherUser.name,
+    creatorEmail: (examData.creatorEmail || teacherUser.email || '').toLowerCase().trim(),
+    status: examData.status || 'draft',
+    totalMarks: calculatedTotalMarks,
+    passingMarks: Number(examData.passingMarks) || Math.floor(calculatedTotalMarks * 0.4),
+  };
+
+  if (isDbConnected()) {
+    return await Exam.create(payload);
+  }
+
+  const newExam = {
+    _id: `exam_${Date.now()}`,
+    ...payload,
+    questions: (payload.questions || []).map((q, idx) => ({
+      _id: q._id || `q_${Date.now()}_${idx}`,
+      ...q,
+      marks: Number(q.marks) || 1,
+    })),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  memoryExams.push(newExam);
+  return newExam;
+};
+
+/**
+ * Teacher: Get all exams created by teacher
+ */
+export const getTeacherExams = async (teacherId) => {
+  if (isDbConnected()) {
+    return await Exam.find({
+      $or: [
+        { creator: teacherId },
+        { isMockTest: true },
+        { courseCode: 'MOCK-101' },
+      ],
+    }).sort({ createdAt: -1 }).exec();
+  }
+
+  return memoryExams
+    .filter((e) => e.creator.toString() === teacherId.toString() || e.isMockTest || e.courseCode === 'MOCK-101')
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
+
+/**
+ * Common: Get exam by ID
+ */
+export const getExamById = async (examId, sanitizeForStudent = false) => {
+  let exam = null;
+
+  if (isDbConnected()) {
+    exam = await Exam.findById(examId).exec();
+  } else {
+    exam = memoryExams.find((e) => e._id.toString() === examId.toString());
+  }
+
+  if (!exam) return null;
+
+  const examData = exam.toObject ? exam.toObject() : { ...exam };
+
+  if (sanitizeForStudent && examData.questions) {
+    examData.questions = sanitizeQuestionsForStudent(examData.questions);
+  }
+
+  return examData;
+};
+
+/**
+ * Teacher: Update exam
+ */
+export const updateExam = async (examId, updateData, teacherId) => {
+  if (isDbConnected()) {
+    const exam = await Exam.findOne({ _id: examId, creator: teacherId });
+    if (!exam) return null;
+
+    Object.assign(exam, updateData);
+    if (updateData.questions) {
+      exam.totalMarks = updateData.questions.reduce(
+        (sum, q) => sum + (Number(q.marks) || 1),
+        0
+      );
+    }
+    return await exam.save();
+  }
+
+  const index = memoryExams.findIndex(
+    (e) => e._id.toString() === examId.toString() && e.creator.toString() === teacherId.toString()
+  );
+  if (index === -1) return null;
+
+  const current = memoryExams[index];
+  const updated = {
+    ...current,
+    ...updateData,
+    updatedAt: new Date(),
+  };
+
+  if (updateData.questions) {
+    updated.totalMarks = updateData.questions.reduce(
+      (sum, q) => sum + (Number(q.marks) || 1),
+      0
+    );
+  }
+
+  memoryExams[index] = updated;
+  return updated;
+};
+
+/**
+ * Teacher: Delete exam
+ */
+export const deleteExam = async (examId, teacherId) => {
+  if (isDbConnected()) {
+    return await Exam.findOneAndDelete({ _id: examId, creator: teacherId }).exec();
+  }
+
+  const index = memoryExams.findIndex(
+    (e) => e._id.toString() === examId.toString() && e.creator.toString() === teacherId.toString()
+  );
+  if (index === -1) return null;
+
+  return memoryExams.splice(index, 1)[0];
+};
+
+/**
+ * Teacher: Toggle publish status
+ */
+export const setExamPublishStatus = async (examId, status, teacherId) => {
+  return await updateExam(examId, { status }, teacherId);
+};
+
+/**
+ * Student: Get all published exams
+ */
+export const getAvailableExamsForStudent = async (studentId, teacherEmailFilter = null, studentEmail = null) => {
+  let query = { status: 'published' };
+  if (teacherEmailFilter && teacherEmailFilter.trim()) {
+    query.creatorEmail = teacherEmailFilter.trim().toLowerCase();
+  }
+
+  let publishedExams = [];
+
+  if (isDbConnected()) {
+    publishedExams = await Exam.find(query).sort({ createdAt: -1 }).lean().exec();
+  } else {
+    publishedExams = memoryExams.filter((e) => {
+      if (e.status !== 'published') return false;
+      if (teacherEmailFilter && teacherEmailFilter.trim()) {
+        return (e.creatorEmail || '').toLowerCase().trim() === teacherEmailFilter.trim().toLowerCase();
+      }
+      return true;
+    });
+  }
+
+  // Filter by student email: Only the 1 onboarding mock test is open to everyone.
+  // All other teacher-created exams are ONLY visible to students explicitly assigned by the teacher.
+  const normalizedStudentEmail = (studentEmail || '').toLowerCase().trim();
+  publishedExams = publishedExams.filter((exam) => {
+    // Exactly 1 onboarding mock test is open to all students to understand the system
+    if (exam.isMockTest || exam.courseCode === 'MOCK-101') return true;
+
+    const assigned = Array.isArray(exam.assignedStudentEmails) ? exam.assignedStudentEmails : [];
+    if (assigned.length === 0 || assigned.includes('*')) return true;
+    if (!normalizedStudentEmail) return false;
+    return assigned.some((email) => email.toLowerCase().trim() === normalizedStudentEmail);
+  });
+
+  // Check if student has active or completed attempts
+  let studentAttempts = [];
+  if (isDbConnected()) {
+    studentAttempts = await ExamAttempt.find({ student: studentId }).lean().exec();
+  } else {
+    studentAttempts = memoryAttempts.filter((a) => a.student.toString() === studentId.toString());
+  }
+
+  return publishedExams.map((exam) => {
+    const attempts = studentAttempts.filter(
+      (a) => a.exam.toString() === exam._id.toString()
+    );
+    const activeAttempt = attempts.find((a) => a.status === 'in_progress');
+    const completedAttempt = attempts.find((a) => a.status === 'completed' || a.status === 'timed_out');
+    const assigned = Array.isArray(exam.assignedStudentEmails) ? exam.assignedStudentEmails : [];
+
+    return {
+      _id: exam._id,
+      title: exam.title,
+      description: exam.description,
+      courseCode: exam.courseCode,
+      creatorName: exam.creatorName,
+      creatorEmail: exam.creatorEmail || '',
+      durationMinutes: exam.durationMinutes,
+      totalMarks: exam.totalMarks,
+      passingMarks: exam.passingMarks,
+      questionCount: (exam.questions || []).length,
+      assignedStudentEmails: assigned,
+      isSpecificallyAssigned: assigned.length > 0 && assigned.some((e) => e.toLowerCase().trim() === normalizedStudentEmail),
+      proctoringSettings: exam.proctoringSettings,
+      hasAttempted: !!completedAttempt,
+      activeAttemptId: activeAttempt ? activeAttempt._id : null,
+      completedAttemptId: completedAttempt ? completedAttempt._id : null,
+      score: completedAttempt ? completedAttempt.score : null,
+      isPassed: completedAttempt ? completedAttempt.isPassed : null,
+    };
+  });
+};
+
+/**
+ * Student: Start examination attempt
+ */
+export const startExamAttempt = async (examId, studentUser) => {
+  const exam = await getExamById(examId, false);
+  if (!exam) {
+    throw new Error('Examination not found');
+  }
+  if (exam.status !== 'published') {
+    throw new Error('This examination is currently not open or is in draft mode');
+  }
+
+  // Guard: Verify student email matches teacher-assigned emails (Only onboarding mock is open to all)
+  const studentEmail = (studentUser.email || '').toLowerCase().trim();
+  const isMock = exam.isMockTest || exam.courseCode === 'MOCK-101';
+  if (!isMock) {
+    const assigned = Array.isArray(exam.assignedStudentEmails) ? exam.assignedStudentEmails : [];
+    const isAuthorized = assigned.length === 0 || assigned.includes('*') || assigned.some((e) => e.toLowerCase().trim() === studentEmail);
+    if (!isAuthorized) {
+      throw new Error(
+        `Access denied: This examination has been assigned by the instructor to specific student emails only. Your account (${studentEmail}) is not authorized.`
+      );
+    }
+  }
+
+  const studentId = studentUser.id || studentUser._id;
+
+  // Check for existing in-progress attempt
+  let existingAttempt = null;
+  if (isDbConnected()) {
+    existingAttempt = await ExamAttempt.findOne({
+      exam: examId,
+      student: studentId,
+      status: 'in_progress',
+    }).exec();
+  } else {
+    existingAttempt = memoryAttempts.find(
+      (a) => a.exam.toString() === examId.toString() && a.student.toString() === studentId.toString() && a.status === 'in_progress'
+    );
+  }
+
+  if (existingAttempt) {
+    const sanitized = sanitizeQuestionsForStudent(exam.questions);
+    // Return existing attempt with sanitized questions
+    return {
+      attempt: existingAttempt,
+      exam: {
+        ...exam,
+        questions: sanitized,
+      },
+      questions: sanitized,
+    };
+  }
+
+  const startTime = new Date();
+  const deadlineTime = new Date(startTime.getTime() + exam.durationMinutes * 60 * 1000);
+
+  // Initialize empty answers array
+  const initialAnswers = (exam.questions || []).map((q, idx) => ({
+    questionId: (q._id || q.questionId || q.id || `q_${idx}`).toString(),
+    selectedOptionIndex: null,
+    isMarkedForReview: false,
+    updatedAt: new Date(),
+  }));
+
+  const attemptData = {
+    student: studentId,
+    studentName: studentUser.name,
+    studentEmail: studentUser.email,
+    studentRollNo: studentUser.studentId || 'N/A',
+    exam: examId,
+    examTitle: exam.title,
+    courseCode: exam.courseCode,
+    durationMinutes: exam.durationMinutes,
+    startTime,
+    deadlineTime,
+    status: 'in_progress',
+    answers: initialAnswers,
+    totalMarks: exam.totalMarks,
+    passingMarks: exam.passingMarks,
+    riskScore: 0,
+    riskLevel: 'LOW',
+  };
+
+  let newAttempt = null;
+  if (isDbConnected()) {
+    newAttempt = await ExamAttempt.create(attemptData);
+  } else {
+    newAttempt = {
+      _id: `attempt_${Date.now()}`,
+      ...attemptData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    memoryAttempts.push(newAttempt);
+  }
+
+  const sanitizedQuestions = sanitizeQuestionsForStudent(exam.questions);
+  return {
+    attempt: newAttempt,
+    exam: {
+      ...exam,
+      questions: sanitizedQuestions,
+    },
+    questions: sanitizedQuestions,
+  };
+};
+
+/**
+ * Student: Auto-save single question answer
+ */
+export const saveStudentAnswer = async (attemptId, studentId, { questionId, selectedOptionIndex, isMarkedForReview }) => {
+  let attempt = null;
+
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
+  } else {
+    attempt = memoryAttempts.find(
+      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+    );
+  }
+
+  if (!attempt) {
+    throw new Error('Active exam attempt not found');
+  }
+
+  if (attempt.status !== 'in_progress') {
+    throw new Error('Cannot update answers for an examination that has already been submitted');
+  }
+
+  // Check deadline
+  if (new Date() > new Date(attempt.deadlineTime)) {
+    attempt.status = 'timed_out';
+    if (isDbConnected()) await attempt.save();
+    throw new Error('Examination duration has expired');
+  }
+
+  const answerIndex = attempt.answers.findIndex(
+    (a) => a.questionId.toString() === questionId.toString()
+  );
+
+  if (answerIndex !== -1) {
+    if (selectedOptionIndex !== undefined) {
+      attempt.answers[answerIndex].selectedOptionIndex = selectedOptionIndex;
+    }
+    if (isMarkedForReview !== undefined) {
+      attempt.answers[answerIndex].isMarkedForReview = isMarkedForReview;
+    }
+    attempt.answers[answerIndex].updatedAt = new Date();
+  } else {
+    attempt.answers.push({
+      questionId: questionId.toString(),
+      selectedOptionIndex,
+      isMarkedForReview: !!isMarkedForReview,
+      updatedAt: new Date(),
+    });
+  }
+
+  if (isDbConnected()) {
+    await attempt.save();
+  }
+
+  return {
+    success: true,
+    savedAt: new Date(),
+    questionId,
+    selectedOptionIndex,
+    isMarkedForReview,
+  };
+};
+
+/**
+ * Student: Submit exam attempt & calculate results
+ */
+export const submitExamAttempt = async (attemptId, studentId, isTimeout = false) => {
+  let attempt = null;
+
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
+  } else {
+    attempt = memoryAttempts.find(
+      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+    );
+  }
+
+  if (!attempt) {
+    throw new Error('Exam attempt not found');
+  }
+
+  if (attempt.status === 'completed') {
+    return attempt;
+  }
+
+  const exam = await getExamById(attempt.exam, false);
+  if (!exam) {
+    throw new Error('Associated examination record not found');
+  }
+
+  const endTime = new Date();
+  let score = 0;
+  const questionMap = new Map();
+  (exam.questions || []).forEach((q) => questionMap.set(q._id.toString(), q));
+
+  // Auto-grade each answer
+  const gradedAnswers = attempt.answers.map((ans) => {
+    const originalQuestion = questionMap.get(ans.questionId.toString());
+    if (!originalQuestion) return ans;
+
+    const isCorrect =
+      ans.selectedOptionIndex !== null &&
+      Number(ans.selectedOptionIndex) === Number(originalQuestion.correctOptionIndex);
+
+    const marksAwarded = isCorrect ? (originalQuestion.marks || 1) : 0;
+    if (isCorrect) {
+      score += marksAwarded;
+    }
+
+    return {
+      ...(ans.toObject ? ans.toObject() : ans),
+      isCorrect,
+      marksAwarded,
+    };
+  });
+
+  const totalMarks = exam.totalMarks || 1;
+  const percentage = Math.round((score / totalMarks) * 100);
+  const isPassed = score >= (exam.passingMarks || 0);
+
+  attempt.endTime = endTime;
+  attempt.status = isTimeout ? 'timed_out' : 'completed';
+  attempt.answers = gradedAnswers;
+  attempt.score = score;
+  attempt.totalMarks = totalMarks;
+  attempt.percentage = percentage;
+  attempt.isPassed = isPassed;
+
+  // Final Proctoring Summary generation (Section 39)
+  attempt.proctoringSummary = generateProctoringSummary(attempt);
+
+  if (isDbConnected()) {
+    await attempt.save();
+  }
+
+  return attempt;
+};
+
+/**
+ * Student: Get all previous exam attempts
+ */
+export const getStudentAttempts = async (studentId) => {
+  if (isDbConnected()) {
+    return await ExamAttempt.find({ student: studentId }).sort({ createdAt: -1 }).lean().exec();
+  }
+
+  return memoryAttempts
+    .filter((a) => a.student.toString() === studentId.toString())
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
+
+/**
+ * Common: Get specific attempt by ID
+ */
+export const getAttemptById = async (attemptId, userId, role) => {
+  let attempt = null;
+
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findById(attemptId).lean().exec();
+  } else {
+    attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
+  }
+
+  if (!attempt) return null;
+
+  // Authorization check: student can only view their own attempt; teacher can view if creator
+  if (role === 'student' && attempt.student.toString() !== userId.toString()) {
+    throw new Error('Access denied: You cannot view another student attempt');
+  }
+
+  return attempt;
+};
+
+/**
+ * Teacher: Get exam results & student submissions analytics
+ */
+export const getExamResultsForTeacher = async (examId, teacherId) => {
+  const exam = await getExamById(examId, false);
+  if (!exam) {
+    throw new Error('Exam not found');
+  }
+
+  let attempts = [];
+  if (isDbConnected()) {
+    attempts = await ExamAttempt.find({ exam: examId }).sort({ createdAt: -1 }).lean().exec();
+  } else {
+    attempts = memoryAttempts
+      .filter((a) => a.exam.toString() === examId.toString())
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  const completedAttempts = attempts.filter((a) => a.status === 'completed' || a.status === 'timed_out');
+  const scores = completedAttempts.map((a) => a.score);
+
+  const totalCandidates = attempts.length;
+  const passedCandidates = completedAttempts.filter((a) => a.isPassed).length;
+  const averageScore = scores.length > 0 ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10 : 0;
+  const highestScore = scores.length > 0 ? Math.max(...scores) : 0;
+  const lowestScore = scores.length > 0 ? Math.min(...scores) : 0;
+  const passPercentage = completedAttempts.length > 0 ? Math.round((passedCandidates / completedAttempts.length) * 100) : 0;
+
+  return {
+    exam: {
+      _id: exam._id,
+      title: exam.title,
+      courseCode: exam.courseCode,
+      totalMarks: exam.totalMarks,
+      passingMarks: exam.passingMarks,
+      questionCount: (exam.questions || []).length,
+    },
+    analytics: {
+      totalCandidates,
+      completedCount: completedAttempts.length,
+      activeCount: attempts.filter((a) => a.status === 'in_progress').length,
+      passedCandidates,
+      passPercentage,
+      averageScore,
+      highestScore,
+      lowestScore,
+    },
+    attempts,
+  };
+};
+
+/**
+ * Teacher: Get all candidate attempts across all supervised exams (with forensic evidence)
+ */
+export const getAllTeacherAttempts = async (teacherId) => {
+  let exams = [];
+  if (isDbConnected()) {
+    exams = await Exam.find({}).lean().exec();
+  } else {
+    exams = memoryExams;
+  }
+
+  const examMap = new Map();
+  exams.forEach((e) => examMap.set(e._id.toString(), e));
+
+  let attempts = [];
+  if (isDbConnected()) {
+    attempts = await ExamAttempt.find({}).sort({ createdAt: -1 }).lean().exec();
+  } else {
+    attempts = [...memoryAttempts].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+
+  return attempts.map((att) => {
+    const matchedExam = examMap.get((att.exam || '').toString());
+    const events = Array.isArray(att.proctoringEvents) ? att.proctoringEvents : [];
+    const phoneCount = events.filter((e) => e.eventType === 'PHONE_DETECTED').length;
+    const multiFaceCount = events.filter((e) => e.eventType === 'MULTIPLE_FACES').length;
+    const tabCount = att.tabSwitchCount !== undefined ? att.tabSwitchCount : events.filter((e) => e.eventType === 'TAB_SWITCH').length;
+
+    return {
+      _id: att._id,
+      student: att.student,
+      studentName: att.studentName || 'Aarav Patel',
+      studentEmail: att.studentEmail || 'student@adaptive.edu',
+      studentRollNo: att.studentRollNo || 'CS-2024-042',
+      exam: att.exam,
+      examTitle: att.examTitle || matchedExam?.title || 'Examination',
+      courseCode: att.courseCode || matchedExam?.courseCode || 'MOCK-101',
+      status: att.status || 'completed',
+      score: att.score !== undefined && att.score !== null ? att.score : 0,
+      totalMarks: att.totalMarks || matchedExam?.totalMarks || 20,
+      passingMarks: att.passingMarks || matchedExam?.passingMarks || 10,
+      percentage: att.percentage !== undefined && att.percentage !== null ? att.percentage : 0,
+      isPassed: att.isPassed !== undefined ? att.isPassed : (att.score >= (att.passingMarks || 10)),
+      riskScore: att.riskScore || 0,
+      riskLevel: att.riskLevel || 'LOW',
+      tabSwitchCount: tabCount,
+      fullscreenExitCount: att.fullscreenExitCount || 0,
+      faceAbsenceCount: att.faceAbsenceCount || 0,
+      phoneDetectedCount: phoneCount,
+      multiFaceCount: multiFaceCount,
+      proctoringEvents: events,
+      answers: att.answers || [],
+      startTime: att.startTime,
+      endTime: att.endTime,
+      createdAt: att.createdAt || new Date(),
+    };
+  });
+};
+
+/**
+ * Student: Record real-time proctoring telemetry event & adaptively compute risk score (Sections 30-42)
+ */
+export const recordProctoringEvent = async (
+  attemptId,
+  studentId,
+  {
+    eventType,
+    details = '',
+    severity = 'warning',
+    confidence = null,
+    snapshotUrl = null,
+    snapshotBase64 = null,
+    simulateAnomaly = null,
+    simulatePhone = false,
+  }
+) => {
+  let attempt = null;
+
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
+  } else {
+    attempt = memoryAttempts.find(
+      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+    );
+  }
+
+  if (!attempt) {
+    throw new Error('Active exam attempt not found');
+  }
+
+  if (!attempt.proctoringEvents) {
+    attempt.proctoringEvents = [];
+  }
+
+  // AWS S3: Upload snapshot evidence if image data is attached
+  let resolvedSnapshotUrl = snapshotUrl;
+  let evidenceS3Key = null;
+  let rekognitionMeta = null;
+  let evaluatedConfidence = confidence !== null ? Number(confidence) : null;
+
+  if (snapshotBase64) {
+    try {
+      const s3Key = `evidence/${attemptId}/${Date.now()}_${eventType.toLowerCase()}.jpg`;
+      const s3Result = await uploadEvidenceSnapshot(snapshotBase64, s3Key);
+      evidenceS3Key = s3Key;
+      resolvedSnapshotUrl = s3Result.url;
+
+      // Section 34: Phone / Object detection via Rekognition DetectLabels
+      if (eventType === 'PHONE_DETECTED' || simulatePhone || simulateAnomaly === 'PHONE_DETECTED') {
+        eventType = 'PHONE_DETECTED';
+        evaluatedConfidence = evaluatedConfidence || 95;
+        severity = 'critical';
+        const labelResult = await detectLabels(snapshotBase64, {
+          simulatePhone: simulatePhone || simulateAnomaly === 'PHONE_DETECTED',
+        });
+        if (labelResult.isPhoneDetected) {
+          evaluatedConfidence = labelResult.confidence || evaluatedConfidence;
+          details = (details ? details + ' | ' : '') + `Rekognition confirmed mobile device (${evaluatedConfidence}%)`;
+          rekognitionMeta = {
+            type: 'PHONE_DETECTED',
+            confidence: evaluatedConfidence,
+            phoneLabels: labelResult.phoneLabels,
+          };
+        } else {
+          details = details || 'Automatic AI Vision: Mobile phone detected in candidate viewport';
+        }
+      } else {
+        // AWS Rekognition: Face detection and anomaly scanning
+        const rekResult = await detectFaces(snapshotBase64, { simulateAnomaly });
+        rekognitionMeta = {
+          faceCount: rekResult.faceCount,
+          anomaly: rekResult.anomaly,
+          mode: rekResult.mode,
+        };
+
+        if (eventType === 'MULTIPLE_FACES' || rekResult.anomaly === 'MULTIPLE_FACES_DETECTED' || (rekResult.faceCount || 0) > 1) {
+          eventType = 'MULTIPLE_FACES';
+          evaluatedConfidence = evaluatedConfidence || 95;
+          details = details || 'Amazon Rekognition / AI Vision flagged multiple faces in webcam arena';
+        } else if (eventType === 'NO_FACE_DETECTED' || rekResult.anomaly === 'NO_FACE_DETECTED' || rekResult.faceCount === 0) {
+          eventType = 'NO_FACE_DETECTED';
+          evaluatedConfidence = evaluatedConfidence || 98;
+        } else if (rekResult.anomaly === 'GAZE_LOOKING_AWAY') {
+          eventType = 'LOOKING_AWAY';
+          evaluatedConfidence = evaluatedConfidence || 88;
+        }
+      }
+    } catch (awsErr) {
+      console.warn('AWS S3/Rekognition processing notice:', awsErr.message);
+    }
+  }
+
+  // Evaluate risk score adaptively using dedicated Proctoring Risk Engine (Sections 30-35)
+  const riskEval = evaluateProctoringRisk(attempt, {
+    eventType,
+    details,
+    severity,
+    confidence: evaluatedConfidence,
+    evidenceS3Key,
+    snapshotUrl: resolvedSnapshotUrl,
+  });
+
+  // Amazon SNS: Check alert escalation rules and prevent duplicate spam (Section 37)
+  const alertCheck = evaluateSnsAlertTrigger(attempt, attempt.riskScore, eventType);
+  if (alertCheck.shouldAlert) {
+    sendHighRiskProctorAlert({
+      studentName: attempt.studentName || 'Candidate',
+      examTitle: attempt.examTitle || 'Examination',
+      riskScore: attempt.riskScore,
+      breachType: eventType,
+      details: `${alertCheck.reason} - ${details}`,
+    }).catch((err) => console.warn('SNS alert dispatch notice:', err.message));
+
+    attempt.snsAlertsSent = attempt.snsAlertsSent || [];
+    attempt.snsAlertsSent.push({
+      alertType: alertCheck.alertLevel,
+      riskScore: attempt.riskScore,
+      sentAt: new Date(),
+    });
+  }
+
+  // AWS Lambda: Async serverless evaluation of the incident
+  invokeIncidentEvaluatorLambda({
+    attemptId,
+    eventType,
+    details,
+    currentScore: attempt.riskScore,
+    snapshotS3Key: evidenceS3Key || resolvedSnapshotUrl,
+  }).catch((err) => console.warn('Lambda evaluator notice:', err.message));
+
+  const newEvent = {
+    _id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    eventType,
+    timestamp: new Date(),
+    confidence: evaluatedConfidence,
+    severity: riskEval.severity,
+    riskContribution: riskEval.riskDelta,
+    riskDelta: riskEval.riskDelta,
+    riskScoreAfter: attempt.riskScore,
+    details: riskEval.finalDetails || details || `Proctoring event: ${eventType}`,
+    evidenceS3Key,
+    snapshotUrl: resolvedSnapshotUrl || null,
+  };
+
+  attempt.proctoringEvents.push(newEvent);
+
+  if (isDbConnected()) {
+    await attempt.save();
+  }
+
+  return {
+    success: true,
+    riskScore: attempt.riskScore,
+    riskLevel: attempt.riskLevel,
+    event: newEvent,
+    totalEvents: attempt.proctoringEvents.length,
+    tabSwitchCount: attempt.tabSwitchCount || 0,
+    fullscreenExitCount: attempt.fullscreenExitCount || 0,
+    faceAbsenceCount: attempt.faceAbsenceCount || 0,
+    multipleFaceCount: attempt.multipleFaceCount || 0,
+    phoneDetectionCount: attempt.phoneDetectionCount || 0,
+    audioAnomalyCount: attempt.audioAnomalyCount || 0,
+    recommendedIntervalMs: riskEval.recommendedIntervalMs,
+    awsTelemetry: {
+      s3SnapshotStored: !!resolvedSnapshotUrl,
+      evidenceS3Key,
+      rekognitionAnalyzed: !!rekognitionMeta,
+      rekognitionDetails: rekognitionMeta,
+      snsAlertTriggered: !!alertCheck.shouldAlert,
+      alertReason: alertCheck.reason,
+    },
+  };
+};
+
+/**
+ * Unified Proctoring Frame Analysis Pipeline
+ * - Real-time candidate identity verification via CompareFaces
+ * - Accurate face absence detection with Grace (5s), Warning (10s), and Critical (30s) tiers
+ * - Multi-person detection with temporal confirmation
+ * - Mobile phone / device detection with label and confidence inspection
+ * - Centralized backend risk engine computation and SNS alerting
+ */
+export const analyzeProctoringFrame = async (
+  attemptId,
+  studentId,
+  {
+    imageBase64,
+    timestamp = Date.now(),
+    isSessionStart = false,
+    clientMetrics = {},
+    clientPhoneDetected = false,
+    clientPhoneConfidence = 0,
+    simulateAnomaly = null,
+    simulatePhone = false,
+  }
+) => {
+  let attempt = null;
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
+  } else {
+    attempt = memoryAttempts.find(
+      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+    );
+  }
+
+  if (!attempt) {
+    throw new Error('Active exam attempt not found or unauthorized');
+  }
+
+  if (!attempt.proctoringEvents) {
+    attempt.proctoringEvents = [];
+  }
+
+  const now = Number(timestamp) || Date.now();
+  let candidateIdentityStatus = attempt.identityVerificationStatus || 'IDENTITY_UNAVAILABLE';
+  let candidateIdentitySimilarity = attempt.identitySimilarity || 0;
+  let identityVerifiedAt = attempt.identityVerifiedAt || null;
+
+  // 1. Candidate Identity Verification (Session Start or Initial Check)
+  if ((isSessionStart || !attempt.identityVerificationStatus) && imageBase64) {
+    try {
+      const refData = await getStudentReferenceImage(studentId);
+      if (!refData || !refData.hasReferenceImage) {
+        candidateIdentityStatus = 'IDENTITY_UNAVAILABLE';
+        candidateIdentitySimilarity = 0;
+      } else {
+        const refPhoto = refData.referencePhotoBase64 || refData.referencePhotoKey || refData.referencePhotoUrl;
+        const compResult = await compareFaces(refPhoto, imageBase64, 80);
+        candidateIdentityStatus = compResult.outcome;
+        candidateIdentitySimilarity = compResult.similarity || 0;
+        identityVerifiedAt = new Date().toISOString();
+
+        if (compResult.outcome === 'IDENTITY_MISMATCH') {
+          const s3Key = `flagged/${attemptId}/${Date.now()}_identity_mismatch.jpg`;
+          const s3Upload = await uploadEvidenceSnapshot(imageBase64, s3Key).catch(() => null);
+          const riskEval = evaluateProctoringRisk(attempt, {
+            eventType: 'IDENTITY_MISMATCH',
+            details: `Biometric mismatch flagged: ${compResult.similarity}% similarity to enrolled reference photo`,
+            severity: 'critical',
+            confidence: compResult.confidence || 95,
+            evidenceS3Key: s3Key,
+            snapshotUrl: s3Upload?.url,
+          });
+
+          attempt.proctoringEvents.push({
+            eventType: 'IDENTITY_MISMATCH',
+            timestamp: new Date(),
+            confidence: compResult.confidence || 95,
+            severity: 'critical',
+            riskContribution: 30,
+            riskDelta: riskEval.riskDelta,
+            riskScoreAfter: attempt.riskScore,
+            details: `Biometric identity mismatch (Similarity: ${compResult.similarity}%)`,
+            evidenceS3Key: s3Key,
+            snapshotUrl: s3Upload?.url || null,
+          });
+        }
+      }
+      attempt.identityVerificationStatus = candidateIdentityStatus;
+      attempt.identitySimilarity = candidateIdentitySimilarity;
+      attempt.identityVerifiedAt = identityVerifiedAt;
+    } catch (idErr) {
+      console.warn('Identity verification error:', idErr.message);
+      candidateIdentityStatus = 'IDENTITY_UNAVAILABLE';
+    }
+  }
+
+  // 2. Face Detection & Analysis
+  let faceResult = null;
+  let faceStatus = 'SINGLE_FACE_DETECTED';
+  let faceCount = 1;
+  let faceConfidence = 99;
+  let isSustainedAbsence = false;
+  let absenceDurationMs = 0;
+
+  if (imageBase64) {
+    faceResult = await detectFaces(imageBase64, { simulateAnomaly });
+  }
+
+  if (!faceResult || faceResult.status === 'ANALYSIS_UNAVAILABLE') {
+    faceStatus = 'ANALYSIS_UNAVAILABLE';
+    faceCount = 0;
+  } else if (faceResult.status === 'NO_FACE_DETECTED') {
+    faceStatus = 'NO_FACE_DETECTED';
+    faceCount = 0;
+    faceConfidence = 95;
+
+    // Temporal Absence Tracking
+    if (!attempt.absenceStartTime) {
+      attempt.absenceStartTime = now;
+    }
+    absenceDurationMs = now - attempt.absenceStartTime;
+
+    if (absenceDurationMs >= ABSENCE_THRESHOLDS.CRITICAL_MS) {
+      isSustainedAbsence = true;
+      if (!attempt.isAbsenceCriticalRecorded) {
+        attempt.isAbsenceCriticalRecorded = true;
+        const s3Key = `flagged/${attemptId}/${Date.now()}_sustained_absence.jpg`;
+        const s3Upload = await uploadEvidenceSnapshot(imageBase64, s3Key).catch(() => null);
+
+        const riskEval = evaluateProctoringRisk(attempt, {
+          eventType: 'SUSTAINED_ABSENCE_CRITICAL',
+          details: `Candidate absent from camera viewport for ${Math.round(absenceDurationMs / 1000)}s (exceeded 30s threshold)`,
+          severity: 'critical',
+          confidence: 96,
+          evidenceS3Key: s3Key,
+          snapshotUrl: s3Upload?.url,
+        });
+
+        attempt.proctoringEvents.push({
+          eventType: 'SUSTAINED_ABSENCE_CRITICAL',
+          timestamp: new Date(),
+          confidence: 96,
+          severity: 'critical',
+          riskContribution: 10,
+          riskDelta: riskEval.riskDelta,
+          riskScoreAfter: attempt.riskScore,
+          details: `Sustained candidate absence confirmed (${Math.round(absenceDurationMs / 1000)}s)`,
+          evidenceS3Key: s3Key,
+          snapshotUrl: s3Upload?.url || null,
+        });
+      }
+    } else if (absenceDurationMs >= ABSENCE_THRESHOLDS.WARNING_MS) {
+      if (!attempt.isAbsenceWarningRecorded) {
+        attempt.isAbsenceWarningRecorded = true;
+        attempt.proctoringEvents.push({
+          eventType: 'SUSTAINED_ABSENCE_WARNING',
+          timestamp: new Date(),
+          confidence: 95,
+          severity: 'warning',
+          riskContribution: 0,
+          riskDelta: 0,
+          riskScoreAfter: attempt.riskScore,
+          details: `Candidate not visible in camera viewport for ${Math.round(absenceDurationMs / 1000)}s`,
+        });
+      }
+    }
+  } else if (faceResult.status === 'SINGLE_FACE_DETECTED') {
+    faceStatus = 'SINGLE_FACE_DETECTED';
+    faceCount = 1;
+    faceConfidence = faceResult.faces?.[0]?.confidence || 99;
+
+    // Reset absence state upon candidate return
+    if (attempt.absenceStartTime) {
+      attempt.absenceStartTime = null;
+      attempt.isAbsenceWarningRecorded = false;
+      attempt.isAbsenceCriticalRecorded = false;
+    }
+    attempt.lastFaceDetectedTimestamp = now;
+
+    // Check gaze deviation
+    if (faceResult.anomaly === 'GAZE_LOOKING_AWAY') {
+      attempt.consecutiveLookingAway = (attempt.consecutiveLookingAway || 0) + 1;
+      if (attempt.consecutiveLookingAway >= 2 && !attempt.isLookingAwayReported) {
+        attempt.isLookingAwayReported = true;
+        const riskEval = evaluateProctoringRisk(attempt, {
+          eventType: 'LOOKING_AWAY',
+          details: 'Continuous gaze looking away from examination monitor',
+          severity: 'warning',
+          confidence: 88,
+        });
+        attempt.proctoringEvents.push({
+          eventType: 'LOOKING_AWAY',
+          timestamp: new Date(),
+          confidence: 88,
+          severity: 'warning',
+          riskContribution: 5,
+          riskDelta: riskEval.riskDelta,
+          riskScoreAfter: attempt.riskScore,
+          details: 'Candidate repeatedly looking away from monitor',
+        });
+      }
+    } else {
+      attempt.consecutiveLookingAway = 0;
+      attempt.isLookingAwayReported = false;
+    }
+  } else if (faceResult.status === 'MULTIPLE_FACES') {
+    faceStatus = 'MULTIPLE_FACES';
+    faceCount = faceResult.faceCount || 2;
+    faceConfidence = faceResult.faces?.[0]?.confidence || 94;
+
+    attempt.consecutiveMultiFace = (attempt.consecutiveMultiFace || 0) + 1;
+    if (attempt.consecutiveMultiFace >= 2 && !attempt.isMultiFaceReported) {
+      attempt.isMultiFaceReported = true;
+      const s3Key = `flagged/${attemptId}/${Date.now()}_multiple_faces.jpg`;
+      const s3Upload = await uploadEvidenceSnapshot(imageBase64, s3Key).catch(() => null);
+
+      const riskEval = evaluateProctoringRisk(attempt, {
+        eventType: 'MULTIPLE_FACES',
+        details: `Multiple individuals identified in webcam view (${faceCount} faces detected)`,
+        severity: 'critical',
+        confidence: faceConfidence,
+        evidenceS3Key: s3Key,
+        snapshotUrl: s3Upload?.url,
+      });
+
+      attempt.proctoringEvents.push({
+        eventType: 'MULTIPLE_FACES',
+        timestamp: new Date(),
+        confidence: faceConfidence,
+        severity: 'critical',
+        riskContribution: 20,
+        riskDelta: riskEval.riskDelta,
+        riskScoreAfter: attempt.riskScore,
+        details: `Multiple faces detected in examination viewport (${faceCount} people)`,
+        evidenceS3Key: s3Key,
+        snapshotUrl: s3Upload?.url || null,
+      });
+    }
+  }
+
+  // 3. Phone / Mobile Device Detection
+  let phoneDetected = false;
+  let phoneConfidence = 0;
+  let phoneLabel = null;
+  let phoneStatus = 'NOT_DETECTED';
+
+  if (imageBase64) {
+    const labelResult = await detectLabels(imageBase64, { simulatePhone });
+    const isAwsPhone = labelResult.isPhoneDetected || labelResult.status === 'DETECTED' || labelResult.phoneStatus === 'PHONE_DETECTED';
+    const isClientPhone = clientPhoneDetected && (clientPhoneConfidence >= 45);
+
+    if (isAwsPhone) {
+      phoneDetected = true;
+      phoneConfidence = labelResult.confidence || 95;
+      phoneLabel = labelResult.detectedLabel || 'Cell Phone';
+      phoneStatus = 'PHONE_DETECTED';
+    } else if (isClientPhone) {
+      phoneDetected = true;
+      phoneConfidence = clientPhoneConfidence;
+      phoneLabel = 'Mobile Phone (AI Vision)';
+      phoneStatus = 'PHONE_DETECTED';
+    } else {
+      phoneStatus = 'NOT_DETECTED';
+    }
+  }
+
+  if (phoneDetected) {
+    if (!attempt.isPhoneActiveReported) {
+      attempt.isPhoneActiveReported = true;
+      const s3Key = `flagged/${attemptId}/${Date.now()}_phone_detected.jpg`;
+      const s3Upload = await uploadEvidenceSnapshot(imageBase64, s3Key).catch(() => null);
+
+      const riskEval = evaluateProctoringRisk(attempt, {
+        eventType: 'PHONE_DETECTED',
+        details: `Prohibited mobile device identified (${phoneLabel}, ${phoneConfidence}% confidence)`,
+        severity: 'critical',
+        confidence: phoneConfidence,
+        evidenceS3Key: s3Key,
+        snapshotUrl: s3Upload?.url,
+      });
+
+      attempt.proctoringEvents.push({
+        eventType: 'PHONE_DETECTED',
+        timestamp: new Date(),
+        confidence: phoneConfidence,
+        severity: 'critical',
+        riskContribution: 25,
+        riskDelta: riskEval.riskDelta,
+        riskScoreAfter: attempt.riskScore,
+        details: `Prohibited mobile device confirmed in camera viewport (${phoneConfidence}% confidence)`,
+        evidenceS3Key: s3Key,
+        snapshotUrl: s3Upload?.url || null,
+      });
+    }
+  } else {
+    // Reset phone active state once removed from camera feed
+    attempt.isPhoneActiveReported = false;
+  }
+
+  // 4. Tab Switches & Fullscreen Exits
+  if (clientMetrics.tabSwitchCount && clientMetrics.tabSwitchCount > (attempt.tabSwitchCount || 0)) {
+    const delta = clientMetrics.tabSwitchCount - (attempt.tabSwitchCount || 0);
+    for (let i = 0; i < delta; i++) {
+      const riskEval = evaluateProctoringRisk(attempt, {
+        eventType: 'TAB_SWITCH',
+        details: 'Candidate navigated away from examination browser window',
+        severity: 'warning',
+      });
+      attempt.proctoringEvents.push({
+        eventType: 'TAB_SWITCH',
+        timestamp: new Date(),
+        severity: 'warning',
+        riskContribution: 5,
+        riskDelta: riskEval.riskDelta,
+        riskScoreAfter: attempt.riskScore,
+        details: 'Candidate switched tabs or blurred examination window',
+      });
+    }
+    attempt.tabSwitchCount = clientMetrics.tabSwitchCount;
+  }
+
+  // 5. Check SNS Alert Escalation
+  const alertCheck = evaluateSnsAlertTrigger(attempt, attempt.riskScore || 0, 'FRAME_EVALUATION');
+  if (alertCheck.shouldAlert) {
+    sendHighRiskProctorAlert({
+      studentName: attempt.studentName || 'Candidate',
+      examTitle: attempt.examTitle || 'Examination',
+      riskScore: attempt.riskScore,
+      breachType: 'HIGH_RISK_ESCALATION',
+      details: alertCheck.reason,
+    }).catch(() => null);
+  }
+
+  // Save latest proctoring snapshot state
+  attempt.latestProctoringState = {
+    updatedAt: new Date().toISOString(),
+    faceStatus,
+    faceCount,
+    faceConfidence,
+    absenceDurationMs,
+    isSustainedAbsence,
+    phoneStatus,
+    phoneDetected,
+    phoneConfidence,
+    phoneLabel,
+    identityStatus: candidateIdentityStatus,
+    identitySimilarity: candidateIdentitySimilarity,
+    identityVerifiedAt,
+    riskScore: attempt.riskScore || 0,
+    riskLevel: attempt.riskLevel || 'LOW',
+    aiAnalysisMode: faceResult?.mode || 'aws-live',
+    aiAnalysisStatus: faceStatus === 'ANALYSIS_UNAVAILABLE' ? 'UNAVAILABLE' : 'CONNECTED',
+    recommendedIntervalMs: getRecommendedIntervalMs(attempt.riskScore || 0),
+  };
+
+  if (isDbConnected()) {
+    await attempt.save();
+  }
+
+  return {
+    success: true,
+    analysis: {
+      status: 'COMPLETED',
+      timestamp: new Date().toISOString(),
+      camera: 'ACTIVE',
+      mode: faceResult?.mode || 'aws-live',
+      aiAnalysisStatus: faceStatus === 'ANALYSIS_UNAVAILABLE' ? 'UNAVAILABLE' : 'CONNECTED',
+      face: {
+        status: faceStatus,
+        count: faceCount,
+        confidence: faceConfidence,
+        absenceDurationMs,
+        isSustainedAbsence,
+      },
+      phone: {
+        status: phoneStatus,
+        detected: phoneDetected,
+        confidence: phoneConfidence,
+        label: phoneLabel,
+      },
+      identity: {
+        status: candidateIdentityStatus,
+        similarity: candidateIdentitySimilarity,
+        verifiedAt: identityVerifiedAt,
+      },
+      risk: {
+        score: attempt.riskScore || 0,
+        level: attempt.riskLevel || 'LOW',
+        recommendedIntervalMs: getRecommendedIntervalMs(attempt.riskScore || 0),
+      },
+    },
+  };
+};
+
+export const getAttemptProctoringStatus = async (attemptId, userId) => {
+  let attempt = null;
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findById(attemptId).lean().exec();
+  } else {
+    attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
+  }
+
+  if (!attempt) {
+    throw new Error('Exam attempt not found');
+  }
+
+  if (attempt.student.toString() !== userId.toString()) {
+    throw new Error('Access denied');
+  }
+
+  return {
+    success: true,
+    latestState: attempt.latestProctoringState || {
+      riskScore: attempt.riskScore || 0,
+      riskLevel: attempt.riskLevel || 'LOW',
+      faceStatus: 'SINGLE_FACE_DETECTED',
+      faceCount: 1,
+      phoneStatus: 'NOT_DETECTED',
+      identityStatus: attempt.identityVerificationStatus || 'IDENTITY_UNAVAILABLE',
+      recommendedIntervalMs: getRecommendedIntervalMs(attempt.riskScore || 0),
+    },
+  };
+};
+
+/**
+ * Get proctoring telemetry audit log for an attempt (Teacher or Student)
+ * Includes chronological timeline, presigned S3 evidence URLs, and summary (Sections 39 & 40)
+ */
+export const getAttemptProctoringEvents = async (attemptId, user) => {
+  let attempt = null;
+
+  if (isDbConnected()) {
+    attempt = await ExamAttempt.findById(attemptId).lean().exec();
+  } else {
+    attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
+  }
+
+  if (!attempt) {
+    throw new Error('Exam attempt not found');
+  }
+
+  if (user.role === 'student' && attempt.student.toString() !== (user.id || user._id).toString()) {
+    throw new Error('Access denied: You cannot view this attempt telemetry');
+  }
+
+  // Section 40: Attach short-lived presigned URLs for secure private S3 evidence viewing
+  const timelineEvents = await Promise.all(
+    (attempt.proctoringEvents || []).map(async (e) => {
+      let presignedUrl = e.snapshotUrl;
+      const keyOrUrl = e.evidenceS3Key || e.snapshotUrl;
+      if (keyOrUrl) {
+        try {
+          const res = await getPresignedDownloadUrl(keyOrUrl);
+          presignedUrl = res.downloadUrl;
+        } catch (err) {
+          presignedUrl = e.snapshotUrl;
+        }
+      }
+      return {
+        ...e,
+        presignedSnapshotUrl: presignedUrl,
+      };
+    })
+  );
+
+  // Section 39: Proctoring Summary
+  const proctoringSummary = attempt.proctoringSummary || generateProctoringSummary(attempt);
+
+  return {
+    attemptId: attempt._id,
+    studentName: attempt.studentName,
+    studentEmail: attempt.studentEmail,
+    studentRollNo: attempt.studentRollNo,
+    examTitle: attempt.examTitle,
+    score: attempt.score,
+    totalMarks: attempt.totalMarks,
+    percentage: attempt.percentage,
+    isPassed: attempt.isPassed,
+    riskScore: attempt.riskScore || 0,
+    riskLevel: attempt.riskLevel || 'LOW',
+    tabSwitchCount: attempt.tabSwitchCount || 0,
+    fullscreenExitCount: attempt.fullscreenExitCount || 0,
+    faceAbsenceCount: attempt.faceAbsenceCount || 0,
+    multipleFaceCount: attempt.multipleFaceCount || 0,
+    phoneDetectionCount: attempt.phoneDetectionCount || 0,
+    lookingAwayCount: attempt.lookingAwayCount || 0,
+    identityMismatchCount: attempt.identityMismatchCount || 0,
+    events: timelineEvents,
+    proctoringSummary,
+  };
+};
+

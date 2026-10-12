@@ -1,0 +1,22 @@
+{
+  "name": "adaptive-ai-exam-proctoring-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Adaptive AI-Based Online Examination & Proctoring System",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start:backend": "npm --prefix backend start",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "edtech",
+    "proctoring",
+    "adaptive-risk",
+    "aws-rekognition",
+    "mern"
+  ],
+  "author": "Adaptive Exam Team",
+  "license": "ISC"
+}
