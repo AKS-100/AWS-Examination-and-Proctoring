@@ -111,9 +111,9 @@ export const login = async (req, res, next) => {
       });
       console.log(`[Auth]: Auto-provisioned user ${email} (${requestedRole})`);
     } else {
-      // Verify password
-      const isMatch = await verifyPassword(password, user.password);
-      if (!isMatch) {
+      // Verify password if set
+      const isMatch = user.password ? await verifyPassword(password, user.password) : true;
+      if (!isMatch && user.password) {
         // Seamlessly update password so the user is never locked out with 'Create an account'
         console.log(`[Auth]: Updating password for user ${email}`);
         await updateUserPassword(user.email, password);

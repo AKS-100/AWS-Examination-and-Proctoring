@@ -16,12 +16,13 @@ import {
 } from './proctoring/riskEngine.service.js';
 
 import { initialMemoryExams, initialMemoryAttempts } from './mockData.js';
+import dynamoService, { isDynamoDbMode } from './dynamo/dynamo.service.js';
 
-// In-Memory store fallback for standalone development
+// In-Memory store fallback for standalone development (mock mode only)
 const memoryExams = [...initialMemoryExams];
 const memoryAttempts = [...initialMemoryAttempts];
 
-const isDbConnected = () => mongoose.connection.readyState === 1;
+const isMongoConnected = () => !isDynamoDbMode() && mongoose.connection.readyState === 1;
 
 
 /**
@@ -66,7 +67,11 @@ export const createExam = async (examData, teacherUser) => {
     passingMarks: Number(examData.passingMarks) || Math.floor(calculatedTotalMarks * 0.4),
   };
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    return await dynamoService.putExam(payload);
+  }
+
+  if (isMongoConnected()) {
     return await Exam.create(payload);
   }
 
@@ -90,7 +95,12 @@ export const createExam = async (examData, teacherUser) => {
  * Teacher: Get all exams created by teacher
  */
 export const getTeacherExams = async (teacherId) => {
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const exams = await dynamoService.listExams(teacherId);
+    return exams.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  if (isMongoConnected()) {
     return await Exam.find({
       $or: [
         { creator: teacherId },
@@ -111,10 +121,12 @@ export const getTeacherExams = async (teacherId) => {
 export const getExamById = async (examId, sanitizeForStudent = false) => {
   let exam = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    exam = await dynamoService.getExam(examId);
+  } else if (isMongoConnected()) {
     exam = await Exam.findById(examId).exec();
   } else {
-    exam = memoryExams.find((e) => e._id.toString() === examId.toString());
+    exam = memoryExams.find((e) => (e._id || e.examId).toString() === examId.toString());
   }
 
   if (!exam) return null;
@@ -132,7 +144,29 @@ export const getExamById = async (examId, sanitizeForStudent = false) => {
  * Teacher: Update exam
  */
 export const updateExam = async (examId, updateData, teacherId) => {
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const current = await dynamoService.getExam(examId);
+    if (!current) return null;
+
+    if (teacherId && current.creator && current.creator.toString() !== teacherId.toString()) {
+      throw new Error('Unauthorized to modify this examination');
+    }
+
+    const updated = {
+      ...current,
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+    if (updateData.questions) {
+      updated.totalMarks = updateData.questions.reduce(
+        (sum, q) => sum + (Number(q.marks) || 1),
+        0
+      );
+    }
+    return await dynamoService.putExam(updated);
+  }
+
+  if (isMongoConnected()) {
     const exam = await Exam.findOne({ _id: examId, creator: teacherId });
     if (!exam) return null;
 
@@ -147,7 +181,7 @@ export const updateExam = async (examId, updateData, teacherId) => {
   }
 
   const index = memoryExams.findIndex(
-    (e) => e._id.toString() === examId.toString() && e.creator.toString() === teacherId.toString()
+    (e) => (e._id || e.examId).toString() === examId.toString() && e.creator.toString() === teacherId.toString()
   );
   if (index === -1) return null;
 
@@ -173,12 +207,23 @@ export const updateExam = async (examId, updateData, teacherId) => {
  * Teacher: Delete exam
  */
 export const deleteExam = async (examId, teacherId) => {
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const current = await dynamoService.getExam(examId);
+    if (!current) return null;
+    if (teacherId && current.creator && current.creator.toString() !== teacherId.toString()) {
+      throw new Error('Unauthorized to delete this examination');
+    }
+    current.status = 'deleted';
+    await dynamoService.putExam(current);
+    return current;
+  }
+
+  if (isMongoConnected()) {
     return await Exam.findOneAndDelete({ _id: examId, creator: teacherId }).exec();
   }
 
   const index = memoryExams.findIndex(
-    (e) => e._id.toString() === examId.toString() && e.creator.toString() === teacherId.toString()
+    (e) => (e._id || e.examId).toString() === examId.toString() && e.creator.toString() === teacherId.toString()
   );
   if (index === -1) return null;
 
@@ -196,14 +241,22 @@ export const setExamPublishStatus = async (examId, status, teacherId) => {
  * Student: Get all published exams
  */
 export const getAvailableExamsForStudent = async (studentId, teacherEmailFilter = null, studentEmail = null) => {
-  let query = { status: 'published' };
-  if (teacherEmailFilter && teacherEmailFilter.trim()) {
-    query.creatorEmail = teacherEmailFilter.trim().toLowerCase();
-  }
-
   let publishedExams = [];
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const all = await dynamoService.listExams(null);
+    publishedExams = all.filter((e) => {
+      if (e.status !== 'published') return false;
+      if (teacherEmailFilter && teacherEmailFilter.trim()) {
+        return (e.creatorEmail || '').toLowerCase().trim() === teacherEmailFilter.trim().toLowerCase();
+      }
+      return true;
+    });
+  } else if (isMongoConnected()) {
+    let query = { status: 'published' };
+    if (teacherEmailFilter && teacherEmailFilter.trim()) {
+      query.creatorEmail = teacherEmailFilter.trim().toLowerCase();
+    }
     publishedExams = await Exam.find(query).sort({ createdAt: -1 }).lean().exec();
   } else {
     publishedExams = memoryExams.filter((e) => {
@@ -230,22 +283,26 @@ export const getAvailableExamsForStudent = async (studentId, teacherEmailFilter 
 
   // Check if student has active or completed attempts
   let studentAttempts = [];
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    studentAttempts = await dynamoService.listStudentSessions(studentId);
+  } else if (isMongoConnected()) {
     studentAttempts = await ExamAttempt.find({ student: studentId }).lean().exec();
   } else {
     studentAttempts = memoryAttempts.filter((a) => a.student.toString() === studentId.toString());
   }
 
   return publishedExams.map((exam) => {
+    const examIdStr = (exam._id || exam.examId).toString();
     const attempts = studentAttempts.filter(
-      (a) => a.exam.toString() === exam._id.toString()
+      (a) => (a.exam || a.examId || '').toString() === examIdStr
     );
     const activeAttempt = attempts.find((a) => a.status === 'in_progress');
     const completedAttempt = attempts.find((a) => a.status === 'completed' || a.status === 'timed_out');
     const assigned = Array.isArray(exam.assignedStudentEmails) ? exam.assignedStudentEmails : [];
 
     return {
-      _id: exam._id,
+      _id: examIdStr,
+      examId: examIdStr,
       title: exam.title,
       description: exam.description,
       courseCode: exam.courseCode,
@@ -259,8 +316,8 @@ export const getAvailableExamsForStudent = async (studentId, teacherEmailFilter 
       isSpecificallyAssigned: assigned.length > 0 && assigned.some((e) => e.toLowerCase().trim() === normalizedStudentEmail),
       proctoringSettings: exam.proctoringSettings,
       hasAttempted: !!completedAttempt,
-      activeAttemptId: activeAttempt ? activeAttempt._id : null,
-      completedAttemptId: completedAttempt ? completedAttempt._id : null,
+      activeAttemptId: activeAttempt ? (activeAttempt.sessionId || activeAttempt._id) : null,
+      completedAttemptId: completedAttempt ? (completedAttempt.sessionId || completedAttempt._id) : null,
       score: completedAttempt ? completedAttempt.score : null,
       isPassed: completedAttempt ? completedAttempt.isPassed : null,
     };
@@ -292,11 +349,16 @@ export const startExamAttempt = async (examId, studentUser) => {
     }
   }
 
-  const studentId = studentUser.id || studentUser._id;
+  const studentId = studentUser.id || studentUser._id || studentUser.studentId;
 
   // Check for existing in-progress attempt
   let existingAttempt = null;
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const studentAttempts = await dynamoService.listStudentSessions(studentId);
+    existingAttempt = studentAttempts.find(
+      (a) => (a.exam || a.examId || '').toString() === examId.toString() && a.status === 'in_progress'
+    );
+  } else if (isMongoConnected()) {
     existingAttempt = await ExamAttempt.findOne({
       exam: examId,
       student: studentId,
@@ -310,7 +372,6 @@ export const startExamAttempt = async (examId, studentUser) => {
 
   if (existingAttempt) {
     const sanitized = sanitizeQuestionsForStudent(exam.questions);
-    // Return existing attempt with sanitized questions
     return {
       attempt: existingAttempt,
       exam: {
@@ -334,10 +395,12 @@ export const startExamAttempt = async (examId, studentUser) => {
 
   const attemptData = {
     student: studentId,
+    studentId: studentId,
     studentName: studentUser.name,
     studentEmail: studentUser.email,
     studentRollNo: studentUser.studentId || 'N/A',
     exam: examId,
+    examId: examId,
     examTitle: exam.title,
     courseCode: exam.courseCode,
     durationMinutes: exam.durationMinutes,
@@ -352,7 +415,14 @@ export const startExamAttempt = async (examId, studentUser) => {
   };
 
   let newAttempt = null;
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const sId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+    newAttempt = await dynamoService.putSession({
+      ...attemptData,
+      sessionId: sId,
+      _id: sId,
+    });
+  } else if (isMongoConnected()) {
     newAttempt = await ExamAttempt.create(attemptData);
   } else {
     newAttempt = {
@@ -381,7 +451,9 @@ export const startExamAttempt = async (examId, studentUser) => {
 export const saveStudentAnswer = async (attemptId, studentId, { questionId, selectedOptionIndex, isMarkedForReview }) => {
   let attempt = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
   } else {
     attempt = memoryAttempts.find(
@@ -393,6 +465,11 @@ export const saveStudentAnswer = async (attemptId, studentId, { questionId, sele
     throw new Error('Active exam attempt not found');
   }
 
+  const attemptStudentId = (attempt.student || attempt.studentId || '').toString();
+  if (studentId && attemptStudentId && attemptStudentId !== studentId.toString()) {
+    throw new Error('Unauthorized attempt access');
+  }
+
   if (attempt.status !== 'in_progress') {
     throw new Error('Cannot update answers for an examination that has already been submitted');
   }
@@ -400,12 +477,17 @@ export const saveStudentAnswer = async (attemptId, studentId, { questionId, sele
   // Check deadline
   if (new Date() > new Date(attempt.deadlineTime)) {
     attempt.status = 'timed_out';
-    if (isDbConnected()) await attempt.save();
+    if (isDynamoDbMode()) await dynamoService.putSession(attempt);
+    else if (isMongoConnected()) await attempt.save();
     throw new Error('Examination duration has expired');
   }
 
+  if (!Array.isArray(attempt.answers)) {
+    attempt.answers = [];
+  }
+
   const answerIndex = attempt.answers.findIndex(
-    (a) => a.questionId.toString() === questionId.toString()
+    (a) => (a.questionId || a._id || '').toString() === questionId.toString()
   );
 
   if (answerIndex !== -1) {
@@ -415,17 +497,19 @@ export const saveStudentAnswer = async (attemptId, studentId, { questionId, sele
     if (isMarkedForReview !== undefined) {
       attempt.answers[answerIndex].isMarkedForReview = isMarkedForReview;
     }
-    attempt.answers[answerIndex].updatedAt = new Date();
+    attempt.answers[answerIndex].updatedAt = new Date().toISOString();
   } else {
     attempt.answers.push({
       questionId: questionId.toString(),
       selectedOptionIndex,
       isMarkedForReview: !!isMarkedForReview,
-      updatedAt: new Date(),
+      updatedAt: new Date().toISOString(),
     });
   }
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    await dynamoService.putSession(attempt);
+  } else if (isMongoConnected()) {
     await attempt.save();
   }
 
@@ -444,7 +528,9 @@ export const saveStudentAnswer = async (attemptId, studentId, { questionId, sele
 export const submitExamAttempt = async (attemptId, studentId, isTimeout = false) => {
   let attempt = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
   } else {
     attempt = memoryAttempts.find(
@@ -456,11 +542,16 @@ export const submitExamAttempt = async (attemptId, studentId, isTimeout = false)
     throw new Error('Exam attempt not found');
   }
 
+  const attemptStudentId = (attempt.student || attempt.studentId || '').toString();
+  if (studentId && attemptStudentId && attemptStudentId !== studentId.toString()) {
+    throw new Error('Unauthorized attempt access');
+  }
+
   if (attempt.status === 'completed') {
     return attempt;
   }
 
-  const exam = await getExamById(attempt.exam, false);
+  const exam = await getExamById(attempt.exam || attempt.examId, false);
   if (!exam) {
     throw new Error('Associated examination record not found');
   }
@@ -468,11 +559,13 @@ export const submitExamAttempt = async (attemptId, studentId, isTimeout = false)
   const endTime = new Date();
   let score = 0;
   const questionMap = new Map();
-  (exam.questions || []).forEach((q) => questionMap.set(q._id.toString(), q));
+  (exam.questions || []).forEach((q) => questionMap.set((q._id || q.questionId || q.id).toString(), q));
 
   // Auto-grade each answer
-  const gradedAnswers = attempt.answers.map((ans) => {
-    const originalQuestion = questionMap.get(ans.questionId.toString());
+  const answers = Array.isArray(attempt.answers) ? attempt.answers : [];
+  const gradedAnswers = answers.map((ans) => {
+    const qId = (ans.questionId || ans._id || '').toString();
+    const originalQuestion = questionMap.get(qId);
     if (!originalQuestion) return ans;
 
     const isCorrect =
@@ -506,7 +599,9 @@ export const submitExamAttempt = async (attemptId, studentId, isTimeout = false)
   // Final Proctoring Summary generation (Section 39)
   attempt.proctoringSummary = generateProctoringSummary(attempt);
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    await dynamoService.putSession(attempt);
+  } else if (isMongoConnected()) {
     await attempt.save();
   }
 
@@ -517,7 +612,12 @@ export const submitExamAttempt = async (attemptId, studentId, isTimeout = false)
  * Student: Get all previous exam attempts
  */
 export const getStudentAttempts = async (studentId) => {
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    const sessions = await dynamoService.listStudentSessions(studentId);
+    return sessions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  if (isMongoConnected()) {
     return await ExamAttempt.find({ student: studentId }).sort({ createdAt: -1 }).lean().exec();
   }
 
@@ -532,7 +632,9 @@ export const getStudentAttempts = async (studentId) => {
 export const getAttemptById = async (attemptId, userId, role) => {
   let attempt = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findById(attemptId).lean().exec();
   } else {
     attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
@@ -541,7 +643,8 @@ export const getAttemptById = async (attemptId, userId, role) => {
   if (!attempt) return null;
 
   // Authorization check: student can only view their own attempt; teacher can view if creator
-  if (role === 'student' && attempt.student.toString() !== userId.toString()) {
+  const attemptStudentId = (attempt.student || attempt.studentId || '').toString();
+  if (role === 'student' && attemptStudentId !== userId.toString()) {
     throw new Error('Access denied: You cannot view another student attempt');
   }
 
@@ -558,7 +661,10 @@ export const getExamResultsForTeacher = async (examId, teacherId) => {
   }
 
   let attempts = [];
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempts = await dynamoService.listSessions(examId);
+    attempts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } else if (isMongoConnected()) {
     attempts = await ExamAttempt.find({ exam: examId }).sort({ createdAt: -1 }).lean().exec();
   } else {
     attempts = memoryAttempts
@@ -578,7 +684,7 @@ export const getExamResultsForTeacher = async (examId, teacherId) => {
 
   return {
     exam: {
-      _id: exam._id,
+      _id: exam._id || exam.examId,
       title: exam.title,
       courseCode: exam.courseCode,
       totalMarks: exam.totalMarks,
@@ -604,17 +710,26 @@ export const getExamResultsForTeacher = async (examId, teacherId) => {
  */
 export const getAllTeacherAttempts = async (teacherId) => {
   let exams = [];
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    exams = await dynamoService.listExams(teacherId);
+  } else if (isMongoConnected()) {
     exams = await Exam.find({}).lean().exec();
   } else {
     exams = memoryExams;
   }
 
   const examMap = new Map();
-  exams.forEach((e) => examMap.set(e._id.toString(), e));
+  exams.forEach((e) => examMap.set((e._id || e.examId).toString(), e));
 
   let attempts = [];
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    for (const e of exams) {
+      const eId = (e._id || e.examId).toString();
+      const sessList = await dynamoService.listSessions(eId);
+      attempts.push(...sessList);
+    }
+    attempts.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  } else if (isMongoConnected()) {
     attempts = await ExamAttempt.find({}).sort({ createdAt: -1 }).lean().exec();
   } else {
     attempts = [...memoryAttempts].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -677,11 +792,13 @@ export const recordProctoringEvent = async (
 ) => {
   let attempt = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
   } else {
     attempt = memoryAttempts.find(
-      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+      (a) => (a._id || a.sessionId).toString() === attemptId.toString() && (a.student || a.studentId).toString() === studentId.toString()
     );
   }
 
@@ -805,7 +922,31 @@ export const recordProctoringEvent = async (
 
   attempt.proctoringEvents.push(newEvent);
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    await dynamoService.putFlaggedEvent({
+      sessionId: attemptId,
+      timestamp: newEvent.timestamp,
+      eventId: newEvent._id,
+      eventType: newEvent.eventType,
+      severity: newEvent.severity,
+      details: newEvent.details,
+      confidence: newEvent.confidence,
+      riskContribution: newEvent.riskContribution,
+      riskScoreAfter: newEvent.riskScoreAfter,
+      evidenceS3Key: newEvent.evidenceS3Key,
+      snapshotUrl: newEvent.snapshotUrl,
+    });
+    await dynamoService.putRiskScoreRecord({
+      sessionId: attemptId,
+      timestamp: newEvent.timestamp,
+      riskScore: attempt.riskScore || 0,
+      riskLevel: attempt.riskLevel || 'LOW',
+      strikes: attempt.strikes || 0,
+      escalated: Boolean(alertCheck.shouldAlert),
+      reasons: [newEvent.details],
+    });
+    await dynamoService.putSession(attempt);
+  } else if (isMongoConnected()) {
     await attempt.save();
   }
 
@@ -856,11 +997,13 @@ export const analyzeProctoringFrame = async (
   }
 ) => {
   let attempt = null;
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findOne({ _id: attemptId, student: studentId }).exec();
   } else {
     attempt = memoryAttempts.find(
-      (a) => a._id.toString() === attemptId.toString() && a.student.toString() === studentId.toString()
+      (a) => (a._id || a.sessionId).toString() === attemptId.toString() && (a.student || a.studentId).toString() === studentId.toString()
     );
   }
 
@@ -1185,7 +1328,9 @@ export const analyzeProctoringFrame = async (
     recommendedIntervalMs: getRecommendedIntervalMs(attempt.riskScore || 0),
   };
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    await dynamoService.putSession(attempt);
+  } else if (isMongoConnected()) {
     await attempt.save();
   }
 
@@ -1226,17 +1371,20 @@ export const analyzeProctoringFrame = async (
 
 export const getAttemptProctoringStatus = async (attemptId, userId) => {
   let attempt = null;
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findById(attemptId).lean().exec();
   } else {
-    attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
+    attempt = memoryAttempts.find((a) => (a._id || a.sessionId).toString() === attemptId.toString());
   }
 
   if (!attempt) {
     throw new Error('Exam attempt not found');
   }
 
-  if (attempt.student.toString() !== userId.toString()) {
+  const attemptStudentId = (attempt.student || attempt.studentId || '').toString();
+  if (userId && attemptStudentId && attemptStudentId !== userId.toString()) {
     throw new Error('Access denied');
   }
 
@@ -1261,18 +1409,30 @@ export const getAttemptProctoringStatus = async (attemptId, userId) => {
 export const getAttemptProctoringEvents = async (attemptId, user) => {
   let attempt = null;
 
-  if (isDbConnected()) {
+  if (isDynamoDbMode()) {
+    attempt = await dynamoService.getSession(attemptId);
+  } else if (isMongoConnected()) {
     attempt = await ExamAttempt.findById(attemptId).lean().exec();
   } else {
-    attempt = memoryAttempts.find((a) => a._id.toString() === attemptId.toString());
+    attempt = memoryAttempts.find((a) => (a._id || a.sessionId).toString() === attemptId.toString());
   }
 
   if (!attempt) {
     throw new Error('Exam attempt not found');
   }
 
-  if (user.role === 'student' && attempt.student.toString() !== (user.id || user._id).toString()) {
+  const attemptStudentId = (attempt.student || attempt.studentId || '').toString();
+  const currentUserId = (user.id || user._id || user.studentId || '').toString();
+  if (user.role === 'student' && attemptStudentId && attemptStudentId !== currentUserId) {
     throw new Error('Access denied: You cannot view this attempt telemetry');
+  }
+
+  // If in DynamoDB mode, query FlaggedEvents in guaranteed chronological order
+  if (isDynamoDbMode()) {
+    const tableEvents = await dynamoService.getFlaggedEventsBySession(attemptId);
+    if (tableEvents && tableEvents.length > 0) {
+      attempt.proctoringEvents = tableEvents;
+    }
   }
 
   // Section 40: Attach short-lived presigned URLs for secure private S3 evidence viewing

@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 35000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -170,7 +170,8 @@ export const apiLambdaEvaluateIncident = async (incidentPayload) => apiClient.po
 /**
  * Real-Time Proctoring Pipeline & Candidate Enrollment
  */
-export const apiEnrollReferencePhoto = async (imageBase64) => apiClient.post('/exams/student/enroll-reference', { imageBase64 });
+export const apiEnrollReferencePhoto = async (imageBase64) =>
+  apiClient.post('/exams/student/enroll-reference', { imageBase64 }, { timeout: 45000 });
 export const apiGetReferenceStatus = async () => apiClient.get('/exams/student/reference-status');
 export const apiAnalyzeProctoringFrame = async (attemptId, payload) => apiClient.post(`/exams/student/attempt/${attemptId}/proctor-frame`, payload);
 export const apiGetAttemptProctoringStatus = async (attemptId) => apiClient.get(`/exams/student/attempt/${attemptId}/proctor-status`);

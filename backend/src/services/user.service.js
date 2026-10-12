@@ -71,9 +71,8 @@ export const findUserByEmail = async (email) => {
     return memoryUsers.get(normalized);
   }
 
-  // Scan DynamoDB students table
-  const all = await dynamoService.listStudents();
-  const found = all.find((u) => u.email?.toLowerCase() === normalized);
+  // Look up in DynamoDB via deterministic email pointer
+  const found = await dynamoService.getStudentByEmail(normalized);
   if (found) {
     memoryUsers.set(normalized, found);
     return found;
@@ -97,12 +96,6 @@ export const findUserByCognitoSub = async (cognitoSub) => {
   if (bySub) {
     if (bySub.email) memoryUsers.set(bySub.email.toLowerCase(), bySub);
     return bySub;
-  }
-  const all = await dynamoService.listStudents();
-  const found = all.find((u) => u.cognitoSub === cognitoSub);
-  if (found) {
-    if (found.email) memoryUsers.set(found.email.toLowerCase(), found);
-    return found;
   }
   return null;
 };

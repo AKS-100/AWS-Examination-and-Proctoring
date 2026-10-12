@@ -31,6 +31,7 @@ try {
     marshallOptions: {
       removeUndefinedValues: true,
       convertEmptyValues: true,
+      convertClassInstanceToMap: true,
     },
     unmarshallOptions: {
       wrapNumbers: false,

@@ -4,17 +4,22 @@ import { connectDB, getDbStatus } from './config/db.js';
 import { awsConfig, isAwsConfigured } from './config/aws.config.js';
 
 const startServer = async () => {
-  // Connect to MongoDB
-  await connectDB();
-  const dbStatus = getDbStatus();
+  let dbLabel = 'DynamoDB (active)';
+  if (env.DATABASE_MODE === 'mongodb') {
+    await connectDB();
+    const dbStatus = getDbStatus();
+    dbLabel = `MongoDB (${dbStatus.state})`;
+  } else {
+    console.log(`[Database] Operating in DynamoDB mode (${env.AWS_REGION})`);
+  }
 
   const server = app.listen(env.PORT, () => {
     console.log(`=======================================================`);
-    console.log(` Adaptive AI Exam & Proctoring System (MongoDB + AWS)  `);
+    console.log(` Adaptive AI Exam & Proctoring System (${env.DATABASE_MODE.toUpperCase()})  `);
     console.log(`=======================================================`);
     console.log(` Mode:        ${env.NODE_ENV}`);
     console.log(` Port:        ${env.PORT}`);
-    console.log(` Database:    MongoDB (${dbStatus.state})`);
+    console.log(` Database:    ${dbLabel}`);
     console.log(` Health:      http://localhost:${env.PORT}/api/health`);
     console.log(` Base API:    http://localhost:${env.PORT}/api`);
     console.log(` AWS Region:  ${awsConfig.region} (Live: ${isAwsConfigured()})`);

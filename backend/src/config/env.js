@@ -6,9 +6,10 @@ export const env = {
   PORT: parseInt(process.env.PORT, 10) || 5000,
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
 
-  // Database (MongoDB)
+  // Database Mode ('dynamodb' or 'mongodb')
+  DATABASE_MODE: (process.env.DATABASE_MODE || process.env.DB_PROVIDER || 'dynamodb').toLowerCase(),
+  DB_PROVIDER: (process.env.DB_PROVIDER || process.env.DATABASE_MODE || 'dynamodb').toLowerCase(),
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/adaptive_exam_db',
-  DB_PROVIDER: process.env.DB_PROVIDER || 'mongodb',
 
   // DynamoDB Tables
   DYNAMODB_TABLE_STUDENTS: process.env.DYNAMODB_TABLE_STUDENTS || 'Students',

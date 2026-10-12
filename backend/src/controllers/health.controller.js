@@ -2,8 +2,8 @@ import { getDatabaseStatus } from '../services/dynamo/dynamo.service.js';
 import { awsConfig, isAwsConfigured } from '../config/aws.config.js';
 import { env } from '../config/env.js';
 
-export const getHealth = (req, res) => {
-  const dbStatus = getDatabaseStatus();
+export const getHealth = async (req, res) => {
+  const dbStatus = await getDatabaseStatus();
   const memoryUsage = process.memoryUsage();
 
   res.status(200).json({
@@ -15,17 +15,11 @@ export const getHealth = (req, res) => {
       environment: env.NODE_ENV,
       timestamp: new Date().toISOString(),
       uptimeSeconds: Math.floor(process.uptime()),
+      database: dbStatus,
       aws: {
         region: awsConfig.region,
         isLiveConfigured: isAwsConfigured(),
-      database: {
-        provider: 'MongoDB',
-        status: dbStatus.state || 'connected',
-        isConnected: dbStatus.isConnected,
-        host: dbStatus.host,
-        dbName: dbStatus.dbName,
-        uri: env.MONGODB_URI ? env.MONGODB_URI.replace(/:[^:]*@/, ':****@') : null,
-      },
+        database: dbStatus,
         s3: {
           bucket: awsConfig.s3Bucket,
           prefixes: ['baselines/', 'flagged/', 'staging/ (1-day lifecycle)'],
