@@ -3,96 +3,128 @@
 @layer base {
   :root {
     color-scheme: light;
-    --primary-blue: #2563EB;
-    --navy-text: #172033;
-    --muted-text: #64748B;
-    --border-subtle: #E2E8F0;
-    --bg-light: #F8FAFC;
-    --bg-white: #FFFFFF;
+    --terracotta-primary: #D96B4C;
+    --terracotta-hover: #C55C3E;
+    --terracotta-soft: #FDF1ED;
+    --terracotta-border: #F5D7CD;
+    --canvas-bg: #F6EFE9;
+    --card-surface: #FFFFFF;
+    --card-inner: #FAF7F2;
+    --text-primary: #2D2A26;
+    --text-secondary: #5C554E;
+    --text-muted: #8C827A;
+    --border-warm: #EFE7DE;
   }
 
   body {
-    background-color: #F8FAFC;
-    color: #172033;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #F6EFE9;
+    color: #2D2A26;
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom Clean Professional Scrollbar */
+  /* Custom Warm Tactile Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #F1F5F9;
+    background: #F3EAE2;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #D9C8BC;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8;
+    background: #BFAEA2;
   }
 }
 
-/* Restrained, professional light-theme elevations */
-.card-clean {
+/* Warm elevated card styling inspired by tactile modern claymorphism */
+.card-clay {
   background-color: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  border: 1px solid #EFE7DE;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px -2px rgba(92, 60, 42, 0.05), 0 2px 6px -1px rgba(92, 60, 42, 0.03);
 }
 
-.card-clean:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+.card-clay-soft {
+  background-color: #FAF7F2;
+  border: 1px solid #EFE7DE;
+  border-radius: 20px;
 }
 
-/* Primary University Blue Button */
-.btn-primary {
-  background-color: #2563EB;
+/* Primary Terracotta Pill Button */
+.btn-terracotta {
+  background: linear-gradient(135deg, #E07253 0%, #D96B4C 100%);
   color: #FFFFFF;
   font-weight: 600;
-  border-radius: 10px;
-  padding: 0.625rem 1.25rem;
-  transition: all 150ms ease-in-out;
+  border-radius: 9999px;
+  padding: 0.55rem 1.25rem;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(217, 107, 76, 0.25);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background-color: #1D4ED8;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+.btn-terracotta:hover:not(:disabled) {
+  background: linear-gradient(135deg, #D46747 0%, #C55C3E 100%);
+  box-shadow: 0 6px 18px rgba(217, 107, 76, 0.35);
+  transform: translateY(-1px);
 }
 
-.btn-primary:disabled {
+.btn-terracotta:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-terracotta:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Subtle Secondary Button */
-.btn-secondary {
+/* Subtle Warm Pill Button */
+.btn-warm-secondary {
   background-color: #FFFFFF;
-  color: #172033;
-  border: 1px solid #E2E8F0;
+  color: #2D2A26;
+  border: 1px solid #EFE7DE;
   font-weight: 600;
-  border-radius: 10px;
-  padding: 0.625rem 1.25rem;
-  transition: all 150ms ease-in-out;
+  border-radius: 9999px;
+  padding: 0.55rem 1.25rem;
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-shadow: 0 2px 6px rgba(92, 60, 42, 0.04);
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background-color: #F8FAFC;
-  border-color: #CBD5E1;
+.btn-warm-secondary:hover:not(:disabled) {
+  background-color: #FAF7F2;
+  border-color: #D96B4C;
+  color: #D96B4C;
+  transform: translateY(-1px);
+}
+
+/* Pill Search Input */
+.input-warm-pill {
+  background-color: #FFFFFF;
+  border: 1px solid #EFE7DE;
+  border-radius: 9999px;
+  padding: 0.55rem 1.25rem 0.55rem 2.75rem;
+  font-size: 0.8125rem;
+  color: #2D2A26;
+  transition: all 180ms ease;
+  box-shadow: 0 1px 3px rgba(92, 60, 42, 0.03);
+}
+
+.input-warm-pill:focus {
+  outline: none;
+  border-color: #D96B4C;
+  box-shadow: 0 0 0 3px rgba(217, 107, 76, 0.12);
 }

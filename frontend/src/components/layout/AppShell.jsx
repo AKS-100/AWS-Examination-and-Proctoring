@@ -56,7 +56,7 @@ export const AppShell = () => {
   const showSidebar = (isTeacher || isStudent) && !isExamArena && !isAuthPage;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-[#172033] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#F6EFE9] text-[#2D2A26] font-sans antialiased">
       {/* Top Navigation */}
       <Navbar
         healthStatus={healthStatus}
@@ -72,11 +72,11 @@ export const AppShell = () => {
 
         {/* Content Container */}
         <main
-          className={`flex-1 transition-all duration-200 ${
+          className={`flex-1 transition-all duration-300 ${
             showSidebar ? 'lg:pl-64' : ''
           }`}
         >
-          <div className={isExamArena || isAuthPage ? 'w-full' : 'max-w-7xl mx-auto p-4 sm:p-6 lg:p-8'}>
+          <div className={isExamArena || isAuthPage ? 'w-full' : 'max-w-7xl mx-auto p-3 sm:p-5 lg:p-7'}>
             <Outlet context={{ healthStatus, refetchHealth: fetchHealth }} />
           </div>
         </main>
