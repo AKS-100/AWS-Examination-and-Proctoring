@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
@@ -13,9 +14,10 @@ import NotFoundPage from './pages/NotFoundPage';
 
 export const App = () => {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route element={<AppShell />}>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          <Route element={<AppShell />}>
           {/* Public Landing & Authentication Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/overview" element={<LandingPage />} />
@@ -87,6 +89,7 @@ export const App = () => {
         </Route>
       </Routes>
     </AuthProvider>
+  </ThemeProvider>
   );
 };
 

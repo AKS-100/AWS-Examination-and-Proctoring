@@ -62,7 +62,7 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-[53px] bottom-0 left-0 z-40 w-60 bg-white border-r border-[#E8E8E8] transition-transform duration-200 ease-out lg:translate-x-0 ${
+        className={`fixed top-[53px] bottom-0 left-0 z-40 w-60 bg-white dark:bg-[#1C1A18] border-r border-[#E8E8E8] dark:border-[#332F2B] transition-transform duration-200 ease-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -70,14 +70,14 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
           <div className="space-y-1">
             {/* Workspace label */}
             <div className="flex items-center gap-2.5 px-3 py-2.5 mb-2">
-              <div className="h-8 w-8 rounded-lg bg-[#F5F5F5] text-[#E8612D] flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-[#F5F5F5] dark:bg-[#262320] text-[#E8612D] flex items-center justify-center">
                 {isTeacher ? <Briefcase className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-[#999]">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-[#999] dark:text-[#8C827A]">
                   Workspace
                 </p>
-                <p className="text-xs font-semibold text-[#1A1A1A]">
+                <p className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2]">
                   {isTeacher ? 'Instructor' : 'Student'}
                 </p>
               </div>
@@ -98,8 +98,8 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
                       isActive
-                        ? 'bg-[#FFF4F0] text-[#E8612D] font-semibold'
-                        : 'text-[#555] hover:text-[#1A1A1A] hover:bg-[#F5F5F5]'
+                        ? 'bg-[#FFF4F0] dark:bg-[#2A1A14] text-[#E8612D] font-semibold'
+                        : 'text-[#555] dark:text-[#C4BCB5] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320]'
                     }`}
                   >
                     <Icon className="w-[18px] h-[18px]" />
@@ -111,21 +111,21 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
           </div>
 
           {/* User footer */}
-          <div className="border-t border-[#E8E8E8] pt-3 space-y-2">
+          <div className="border-t border-[#E8E8E8] dark:border-[#332F2B] pt-3 space-y-2">
             <div className="flex items-center gap-2.5 px-3 py-1.5">
-              <div className="h-8 w-8 rounded-lg bg-[#E8612D] text-white flex items-center justify-center font-semibold text-xs">
+              <div className="h-8 w-8 rounded-lg bg-[#E8612D] text-white flex items-center justify-center font-semibold text-xs shadow-xs">
                 {(user?.name || 'U').charAt(0).toUpperCase()}
               </div>
               <div className="overflow-hidden flex-1">
-                <p className="text-xs font-semibold text-[#1A1A1A] truncate">{user?.name || 'User'}</p>
-                <p className="text-[10px] text-[#999] truncate">{user?.email || ''}</p>
+                <p className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] truncate">{user?.name || 'User'}</p>
+                <p className="text-[10px] text-[#999] dark:text-[#8C827A] truncate">{user?.email || ''}</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={handleSignOut}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-[#999] hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-[#999] dark:text-[#8C827A] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>

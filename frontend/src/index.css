@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     color-scheme: light;
@@ -17,6 +19,22 @@
     --border-hover: #D0D0D0;
   }
 
+  .dark {
+    color-scheme: dark;
+    --accent: #F06E3B;
+    --accent-hover: #FA804F;
+    --accent-light: #2A1A14;
+    --accent-border: #4A281E;
+    --bg-primary: #121110;
+    --bg-card: #1C1A18;
+    --bg-subtle: #262320;
+    --text-primary: #FAF7F2;
+    --text-secondary: #C4BCB5;
+    --text-muted: #8C827A;
+    --border: #332F2B;
+    --border-hover: #47423D;
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
@@ -24,12 +42,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   /* Clean minimal scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -41,28 +60,45 @@
     border-radius: 9999px;
   }
 
+  .dark ::-webkit-scrollbar-thumb {
+    background: #47423D;
+  }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #AAAAAA;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #5E5852;
   }
 }
 
 /* Clean elevated card */
 .card-clay {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dark .card-clay {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .card-clay:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.dark .card-clay:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
 .card-clay-soft {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: 12px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Primary accent button */
@@ -98,7 +134,7 @@
 
 /* Secondary / outline button */
 .btn-warm-secondary {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border);
   font-weight: 600;
@@ -120,7 +156,7 @@
 
 /* Clean input field */
 .input-warm-pill {
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.65rem 1rem 0.65rem 2.75rem;
@@ -137,5 +173,90 @@
 .input-warm-pill:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(232, 97, 45, 0.08);
+  box-shadow: 0 0 0 3px rgba(232, 97, 45, 0.12);
 }
+
+/* =========================================================================
+   Dark Theme Architectural Overrides for Terracotta & Warm Sand Elements
+   ========================================================================= */
+
+.dark .text-\[\#2D2A26\] {
+  color: #FAF7F2 !important;
+}
+
+.dark .text-\[\#1A1A1A\] {
+  color: #FAF7F2 !important;
+}
+
+.dark .text-\[\#5C554E\] {
+  color: #C4BCB5 !important;
+}
+
+.dark .text-\[\#555\] {
+  color: #C4BCB5 !important;
+}
+
+.dark .text-\[\#8C827A\] {
+  color: #A89F97 !important;
+}
+
+.dark .bg-\[\#FAF7F2\] {
+  background-color: #24211E !important;
+}
+
+.dark .bg-\[\#FAF7F2\]\/50 {
+  background-color: rgba(36, 33, 30, 0.5) !important;
+}
+
+.dark .hover\:bg-\[\#FAF7F2\]:hover {
+  background-color: #282421 !important;
+}
+
+.dark .hover\:bg-\[\#FAF7F2\]\/50:hover {
+  background-color: rgba(40, 36, 33, 0.55) !important;
+}
+
+.dark .border-\[\#EFE7DE\] {
+  border-color: #38332E !important;
+}
+
+.dark .divide-\[\#EFE7DE\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #38332E !important;
+}
+
+.dark .bg-white {
+  background-color: #1C1A18 !important;
+}
+
+.dark .bg-white\/80 {
+  background-color: rgba(28, 26, 24, 0.85) !important;
+}
+
+.dark .bg-\[\#F5F5F5\] {
+  background-color: #262320 !important;
+}
+
+.dark .border-\[\#E8E8E8\] {
+  border-color: #332F2B !important;
+}
+
+.dark .bg-rose-50\/70 {
+  background-color: rgba(68, 16, 22, 0.4) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #FDA4AF !important;
+}
+
+.dark .bg-amber-50\/60 {
+  background-color: rgba(77, 39, 4, 0.4) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  color: #FCD34D !important;
+}
+
+.dark .text-rose-950 {
+  color: #FDA4AF !important;
+}
+
+.dark .text-amber-950 {
+  color: #FCD34D !important;
+}
+

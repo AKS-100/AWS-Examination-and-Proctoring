@@ -56,7 +56,7 @@ export const AppShell = () => {
   const showSidebar = (isTeacher || isStudent) && !isExamArena && !isAuthPage;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] text-[#1A1A1A] font-sans antialiased">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#121110] text-[#1A1A1A] dark:text-[#FAF7F2] font-sans antialiased transition-colors">
       {/* Top Navigation */}
       <Navbar
         healthStatus={healthStatus}

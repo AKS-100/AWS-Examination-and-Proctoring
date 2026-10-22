@@ -153,12 +153,31 @@ export const TeacherDashboard = () => {
   const handleOpenAuditModal = async (attemptItem) => {
     setSelectedAuditAttempt(attemptItem);
     setIsAuditLoading(true);
-    setAuditEvents([]);
+
+    // Initialize with existing proctoring events on the attempt item so events (such as mobile device detections) are immediately available
+    const initialEvents = Array.isArray(attemptItem.proctoringEvents) && attemptItem.proctoringEvents.length > 0
+      ? attemptItem.proctoringEvents
+      : (Array.isArray(attemptItem.events) ? attemptItem.events : []);
+    setAuditEvents(initialEvents);
 
     try {
       const res = await apiGetAttemptProctoringEvents(attemptItem._id);
-      if (res.data?.events) {
-        setAuditEvents(res.data.events);
+      const fetchedEvents = res.data?.events || [];
+      if (fetchedEvents.length > 0) {
+        // Merge fetched and initial events without dropping any recorded telemetry
+        const seen = new Set();
+        const merged = [];
+        [...fetchedEvents, ...initialEvents].forEach((ev) => {
+          const type = ev.eventType || ev.type || 'EVENT';
+          const time = new Date(ev.timestamp || ev.time || 0).getTime();
+          const key = `${type}_${Math.floor(time / 1000)}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            merged.push(ev);
+          }
+        });
+        merged.sort((a, b) => new Date(a.timestamp || a.time || 0) - new Date(b.timestamp || b.time || 0));
+        setAuditEvents(merged);
       }
     } catch (err) {
       console.error('Failed to load telemetry events:', err);
@@ -952,6 +971,7 @@ export const TeacherDashboard = () => {
                     const tabSwitches = att.tabSwitchCount || 0;
                     const multiFaces = att.multiFaceCount || att.multipleFaceCount || 0;
                     const phones = att.phoneDetectedCount || att.phoneDetectionCount || 0;
+                    const audioAnomalies = att.audioAnomalyCount || (att.proctoringEvents || []).filter((e) => (e.eventType || e.type) === 'AUDIO_ANOMALY').length;
 
                     return (
                       <tr key={att._id} className="hover:bg-[#FAF7F2]/50 transition-colors">
@@ -971,6 +991,7 @@ export const TeacherDashboard = () => {
                           <span>Tab Switches: {tabSwitches}</span>
                           {multiFaces > 0 && <span className="ml-2 font-bold text-amber-700">• Multiple Faces: {multiFaces}</span>}
                           {phones > 0 && <span className="ml-2 font-bold text-rose-700">• Mobile Device: {phones}</span>}
+                          {audioAnomalies > 0 && <span className="ml-2 font-bold text-amber-600">• Audio Anomaly: {audioAnomalies}</span>}
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <button
