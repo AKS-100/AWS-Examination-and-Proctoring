@@ -770,7 +770,8 @@ export const TeacherDashboard = () => {
                   {attempts.map((att) => {
                     const riskVal = att.riskScore || 0;
                     const tabSwitches = att.tabSwitchCount || 0;
-                    const multiFaces = att.multiFaceCount || 0;
+                    const multiFaces = att.multiFaceCount || att.multipleFaceCount || 0;
+                    const phones = att.phoneDetectedCount || att.phoneDetectionCount || 0;
 
                     return (
                       <tr key={att._id} className="hover:bg-slate-50/70 transition-colors">
@@ -787,6 +788,7 @@ export const TeacherDashboard = () => {
                         <td className="py-3.5 px-4 text-[#64748B]">
                           <span>Tab Switches: {tabSwitches}</span>
                           {multiFaces > 0 && <span className="ml-2 font-semibold text-amber-700">• Multiple Faces: {multiFaces}</span>}
+                          {phones > 0 && <span className="ml-2 font-semibold text-rose-700">• Mobile Device: {phones}</span>}
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           <button
@@ -909,10 +911,10 @@ export const TeacherDashboard = () => {
                           </span>
                         </div>
                         <p className="text-[11px] text-[#64748B]">{eventDesc}</p>
-                        {evt.evidenceUrl && (
+                        {(evt.evidenceUrl || evt.presignedSnapshotUrl || evt.snapshotUrl) && (
                           <div className="pt-1">
                             <a
-                              href={evt.evidenceUrl}
+                              href={evt.evidenceUrl || evt.presignedSnapshotUrl || evt.snapshotUrl}
                               target="_blank"
                               rel="noreferrer"
                               className="text-[10px] font-semibold text-blue-600 hover:underline flex items-center gap-1"

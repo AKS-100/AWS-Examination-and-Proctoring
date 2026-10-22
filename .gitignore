@@ -25,6 +25,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 *.log
+*.zip
 dump.html
 chrome_err.log
 
@@ -38,3 +39,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+
+
+AWS_Deployment_Guide.md
