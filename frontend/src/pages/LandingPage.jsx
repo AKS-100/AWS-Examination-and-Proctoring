@@ -6,146 +6,142 @@ import {
   Activity,
   Lock,
   Clock,
-  CheckCircle2,
   ArrowRight,
-  Sparkles,
   Camera,
-  Users,
-  Award,
-  ChevronRight,
   Check,
+  Zap,
+  Users,
+  BarChart3,
 } from 'lucide-react';
 
 export const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-[#F6EFE9] text-[#2D2A26] flex flex-col justify-between font-['Outfit','Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#1A1A1A] flex flex-col justify-between font-['Plus_Jakarta_Sans','Outfit',sans-serif]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:pt-16 md:pb-28">
-        {/* Soft background glow accents */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-[#D96B4C]/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-amber-400/10 blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      <section className="relative pt-16 pb-20 md:pt-20 md:pb-28">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Column: Headline, Copy, Actions */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-[#EFE7DE] text-xs font-bold text-[#D96B4C] shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 fill-current" />
-                <span>Next-Gen Institutional Examination Arena</span>
+            {/* Left Column: Headline & Actions */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FFF4F0] border border-[#FFD9CC] text-xs font-semibold text-[#E8612D]">
+                <Zap className="w-3.5 h-3.5" />
+                <span>AI-Powered Exam Platform</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#2D2A26] leading-tight">
-                Intelligent Exams.<br />
-                <span className="text-[#D96B4C]">Zero Distractions.</span>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A1A] leading-[1.15]">
+                Smart exams,<br />
+                <span className="text-[#E8612D]">honest results.</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-[#5C554E] max-w-xl leading-relaxed font-normal">
-                An adaptive, warm, and highly secure examination ecosystem powered by AWS Rekognition facial biometric telemetry and real-time DynamoDB risk scoring.
+              <p className="text-base text-[#555] max-w-md leading-relaxed">
+                A secure online examination system with AI-powered proctoring, real-time monitoring, and transparent risk scoring built on AWS.
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   to="/login"
-                  className="btn-terracotta text-sm py-3 px-6 shadow-md shadow-[#D96B4C]/25 flex items-center gap-2"
+                  className="btn-terracotta py-3 px-6 text-sm flex items-center gap-2"
                 >
-                  <span>Launch Arena</span>
+                  <span>Get Started</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
 
                 <a
                   href="#features"
-                  className="btn-warm-secondary text-sm py-3 px-6"
+                  className="btn-warm-secondary py-3 px-6 text-sm"
                 >
-                  Explore System
+                  Learn More
                 </a>
               </div>
 
-              {/* Key Trust Signals */}
-              <div className="pt-6 grid grid-cols-3 gap-4 border-t border-[#EFE7DE] max-w-lg">
+              {/* Trust Signals */}
+              <div className="pt-6 flex items-center gap-6 border-t border-[#E8E8E8]">
                 <div>
-                  <div className="text-2xl font-extrabold text-[#2D2A26]">99.9%</div>
-                  <div className="text-xs text-[#8C827A] font-medium">AWS Uptime SLA</div>
+                  <div className="text-xl font-bold text-[#1A1A1A]">99.9%</div>
+                  <div className="text-xs text-[#999]">Uptime</div>
                 </div>
+                <div className="w-px h-8 bg-[#E8E8E8]" />
                 <div>
-                  <div className="text-2xl font-extrabold text-[#D96B4C]">0-Penalty</div>
-                  <div className="text-xs text-[#8C827A] font-medium">Transparent Audits</div>
+                  <div className="text-xl font-bold text-[#E8612D]">Fair</div>
+                  <div className="text-xs text-[#999]">Transparent Audits</div>
                 </div>
+                <div className="w-px h-8 bg-[#E8E8E8]" />
                 <div>
-                  <div className="text-2xl font-extrabold text-[#2D2A26]">Cognito</div>
-                  <div className="text-xs text-[#8C827A] font-medium">Role Governance</div>
+                  <div className="text-xl font-bold text-[#1A1A1A]">Secure</div>
+                  <div className="text-xs text-[#999]">AWS Cognito</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Cozy Exam Preview Interface */}
-            <div className="lg:col-span-5">
-              <div className="relative mx-auto max-w-md card-clay rounded-[32px] p-6 space-y-4 border border-[#EFE7DE]">
+            {/* Right Column: Exam Preview Card */}
+            <div className="lg:col-span-6">
+              <div className="relative mx-auto max-w-md card-clay rounded-2xl p-5 space-y-4">
                 {/* Header bar */}
-                <div className="flex items-center justify-between pb-3 border-b border-[#EFE7DE]">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E8E8E8]">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-[14px] bg-[#FAF7F2] border border-[#EFE7DE] text-[#D96B4C] flex items-center justify-center font-extrabold text-xs shadow-xs">
+                    <div className="h-9 w-9 rounded-lg bg-[#F5F5F5] text-[#E8612D] flex items-center justify-center font-bold text-xs">
                       CS
                     </div>
                     <div>
-                      <h4 className="text-xs font-extrabold text-[#2D2A26]">CS-301: Systems & Architecture</h4>
-                      <p className="text-[10px] text-[#8C827A]">Question 4 of 20 • Proctored Midterm</p>
+                      <h4 className="text-sm font-semibold text-[#1A1A1A]">Systems & Architecture</h4>
+                      <p className="text-[11px] text-[#999]">Question 4 of 20 · Midterm</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF7F2] text-xs font-bold text-[#D96B4C] border border-[#EFE7DE]">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F5F5F5] text-xs font-semibold text-[#555]">
                     <Clock className="w-3.5 h-3.5" />
                     <span>38:42</span>
                   </div>
                 </div>
 
-                {/* Subtle Proctoring Status Badge */}
-                <div className="flex items-center justify-between px-3.5 py-2.5 rounded-[18px] bg-[#FAF7F2] border border-[#EFE7DE] text-xs">
+                {/* Proctoring Status */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#F5F5F5] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                    <span className="text-xs font-bold text-[#2D2A26]">Telemetry Active</span>
+                    <span className="font-medium text-[#1A1A1A]">Proctoring Active</span>
                   </div>
-                  <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    Face Verified
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    Verified
                   </span>
                 </div>
 
-                {/* Simulated Question */}
-                <div className="space-y-3 pt-1">
-                  <p className="text-xs font-bold text-[#2D2A26] leading-relaxed">
+                {/* Question */}
+                <div className="space-y-2.5 pt-1">
+                  <p className="text-sm font-medium text-[#1A1A1A]">
                     Which CPU scheduling algorithm provides strict non-preemptive execution by default?
                   </p>
 
                   <div className="space-y-2">
-                    <div className="p-3 rounded-[18px] border border-[#EFE7DE] bg-white text-xs text-[#8C827A] flex items-center gap-2.5">
-                      <div className="w-4 h-4 rounded-full border border-[#EFE7DE] flex items-center justify-center text-[10px]">A</div>
+                    <div className="p-3 rounded-lg border border-[#E8E8E8] bg-white text-sm text-[#555] flex items-center gap-2.5 hover:border-[#D0D0D0] transition-colors cursor-pointer">
+                      <div className="w-5 h-5 rounded-md border border-[#E8E8E8] flex items-center justify-center text-[10px] font-medium text-[#999]">A</div>
                       <span>Round Robin (RR)</span>
                     </div>
 
-                    <div className="p-3 rounded-[18px] border-2 border-[#D96B4C] bg-[#FFF8F6] text-xs font-bold text-[#2D2A26] flex items-center justify-between">
+                    <div className="p-3 rounded-lg border-2 border-[#E8612D] bg-[#FFF4F0] text-sm font-medium text-[#1A1A1A] flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-4 h-4 rounded-full bg-[#D96B4C] text-white flex items-center justify-center text-[10px]">B</div>
+                        <div className="w-5 h-5 rounded-md bg-[#E8612D] text-white flex items-center justify-center text-[10px]">B</div>
                         <span>First-Come, First-Served (FCFS)</span>
                       </div>
-                      <Check className="w-3.5 h-3.5 text-[#D96B4C]" />
+                      <Check className="w-4 h-4 text-[#E8612D]" />
                     </div>
 
-                    <div className="p-3 rounded-[18px] border border-[#EFE7DE] bg-white text-xs text-[#8C827A] flex items-center gap-2.5">
-                      <div className="w-4 h-4 rounded-full border border-[#EFE7DE] flex items-center justify-center text-[10px]">C</div>
-                      <span>Shortest Remaining Time First (SRTF)</span>
+                    <div className="p-3 rounded-lg border border-[#E8E8E8] bg-white text-sm text-[#555] flex items-center gap-2.5 hover:border-[#D0D0D0] transition-colors cursor-pointer">
+                      <div className="w-5 h-5 rounded-md border border-[#E8E8E8] flex items-center justify-center text-[10px] font-medium text-[#999]">C</div>
+                      <span>Shortest Remaining Time First</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Footer Controls Preview */}
-                <div className="flex items-center justify-between pt-3 border-t border-[#EFE7DE] text-xs">
-                  <span className="text-[11px] text-[#8C827A] font-medium">Auto-saved to DynamoDB</span>
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-3 border-t border-[#E8E8E8] text-xs">
+                  <span className="text-[#999]">Auto-saved</span>
                   <div className="flex items-center gap-2">
-                    <span className="px-3 py-1.5 rounded-full border border-[#EFE7DE] text-[#8C827A] text-xs">Back</span>
-                    <span className="px-3.5 py-1.5 rounded-full bg-[#D96B4C] text-white font-bold text-xs shadow-xs">Next</span>
+                    <span className="px-3 py-1.5 rounded-lg border border-[#E8E8E8] text-[#999] text-xs cursor-pointer hover:bg-[#F5F5F5]">Back</span>
+                    <span className="px-3.5 py-1.5 rounded-lg bg-[#E8612D] text-white font-medium text-xs cursor-pointer hover:bg-[#D4551F]">Next</span>
                   </div>
                 </div>
               </div>
@@ -156,57 +152,57 @@ export const LandingPage = () => {
       </section>
 
       {/* Feature Cards Section */}
-      <section id="features" className="py-16 md:py-24 border-t border-b border-[#EFE7DE]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <section id="features" className="py-16 md:py-24 bg-white border-t border-b border-[#E8E8E8]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2D2A26]">
-              Engineered for Academic Integrity & Comfort
+          <div className="text-center max-w-xl mx-auto space-y-3">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1A1A1A]">
+              Built for academic integrity
             </h2>
-            <p className="text-sm sm:text-base text-[#5C554E]">
-              Every assessment mechanism is calibrated to balance high-security proctoring with non-punitive fairness.
+            <p className="text-sm sm:text-base text-[#555]">
+              Secure proctoring balanced with transparent, fair evaluation.
             </p>
           </div>
 
-          {/* Three Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* Card 1: Secure Online Exams */}
-            <div className="card-clay rounded-[32px] p-7 sm:p-8 space-y-4 hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-[20px] bg-[#FAF7F2] text-[#D96B4C] border border-[#EFE7DE] flex items-center justify-center shadow-xs">
+            {/* Card 1 */}
+            <div className="p-6 rounded-2xl border border-[#E8E8E8] bg-[#FAFAFA] hover:bg-white hover:shadow-sm transition-all space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-[#FFF4F0] text-[#E8612D] flex items-center justify-center">
                 <Lock className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-extrabold text-[#2D2A26]">
-                Secure Testing Arena
+              <h3 className="text-base font-semibold text-[#1A1A1A]">
+                Secure Testing
               </h3>
-              <p className="text-xs sm:text-sm text-[#5C554E] leading-relaxed">
-                Timed assessments with fullscreen protection, tab-switch telemetry, automatic question answers saving, and instant evaluation.
+              <p className="text-sm text-[#555] leading-relaxed">
+                Timed assessments with fullscreen protection, tab-switch detection, auto-saving, and instant evaluation.
               </p>
             </div>
 
-            {/* Card 2: AI-Assisted Proctoring */}
-            <div className="card-clay rounded-[32px] p-7 sm:p-8 space-y-4 hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-[20px] bg-[#FBE0D6] text-[#B84E31] flex items-center justify-center shadow-xs">
+            {/* Card 2 */}
+            <div className="p-6 rounded-2xl border border-[#E8E8E8] bg-[#FAFAFA] hover:bg-white hover:shadow-sm transition-all space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-[#FEF3C7] text-[#D97706] flex items-center justify-center">
                 <Eye className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-extrabold text-[#2D2A26]">
-                AWS Rekognition AI
+              <h3 className="text-base font-semibold text-[#1A1A1A]">
+                AI Proctoring
               </h3>
-              <p className="text-xs sm:text-sm text-[#5C554E] leading-relaxed">
-                Continuous facial presence verification and object detection (phones, extra faces) running asynchronously without degrading test performance.
+              <p className="text-sm text-[#555] leading-relaxed">
+                Continuous face verification and object detection via AWS Rekognition, running without affecting test performance.
               </p>
             </div>
 
-            {/* Card 3: Transparent Risk Monitoring */}
-            <div className="card-clay rounded-[32px] p-7 sm:p-8 space-y-4 hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-[20px] bg-[#E2EBE5] text-[#4F6D5B] flex items-center justify-center shadow-xs">
+            {/* Card 3 */}
+            <div className="p-6 rounded-2xl border border-[#E8E8E8] bg-[#FAFAFA] hover:bg-white hover:shadow-sm transition-all space-y-4">
+              <div className="w-10 h-10 rounded-lg bg-[#D1FAE5] text-[#059669] flex items-center justify-center">
                 <Activity className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-extrabold text-[#2D2A26]">
-                Real-Time Telemetry Audit
+              <h3 className="text-base font-semibold text-[#1A1A1A]">
+                Transparent Audits
               </h3>
-              <p className="text-xs sm:text-sm text-[#5C554E] leading-relaxed">
-                Professors can review flagged timestamps with presigned S3 evidence photos, eliminating false accusations and ensuring complete transparency.
+              <p className="text-sm text-[#555] leading-relaxed">
+                Instructors can review flagged events with timestamped evidence photos, ensuring fairness and eliminating false accusations.
               </p>
             </div>
 
@@ -214,32 +210,32 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* About / Institutional Quality Section */}
+      {/* About / CTA Section */}
       <section id="about" className="py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto card-clay rounded-[36px] p-8 sm:p-12 space-y-6 text-center border border-[#EFE7DE]">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-[20px] bg-gradient-to-br from-[#D96B4C] to-[#B84E31] text-white mx-auto shadow-md shadow-[#D96B4C]/20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto card-clay rounded-2xl p-8 sm:p-12 space-y-5 text-center">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8612D] text-white mx-auto">
               <ShieldCheck className="w-6 h-6" />
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-[#2D2A26]">
-              Built for Institutional Trust & Reliability
+            <h3 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">
+              Ready to get started?
             </h3>
 
-            <p className="text-xs sm:text-sm text-[#5C554E] leading-relaxed max-w-xl mx-auto">
-              AdaptiveExam strictly separates student candidates from instructors through AWS Cognito identity pools, DynamoDB persistence, and S3 secure storage.
+            <p className="text-sm text-[#555] max-w-md mx-auto">
+              Create your account and set up your first exam in minutes. Built with AWS Cognito, DynamoDB, and S3 for enterprise-grade security.
             </p>
 
             <div className="pt-2 flex justify-center gap-3">
               <Link
                 to="/login"
-                className="btn-terracotta text-xs py-3 px-6"
+                className="btn-terracotta text-sm py-2.5 px-6"
               >
-                Sign In to Workspace
+                Sign In
               </Link>
               <Link
                 to="/register"
-                className="btn-warm-secondary text-xs py-3 px-6"
+                className="btn-warm-secondary text-sm py-2.5 px-6"
               >
                 Create Account
               </Link>
@@ -249,21 +245,21 @@ export const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[#EFE7DE] py-8 bg-[#FAF7F2]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-[#E8E8E8] py-6 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-[10px] bg-[#D96B4C] text-white flex items-center justify-center shadow-xs">
+            <div className="h-7 w-7 rounded-lg bg-[#E8612D] text-white flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
-            <span className="font-extrabold text-sm text-[#2D2A26]">AdaptiveExam</span>
-            <span className="text-xs text-[#8C827A]">© {new Date().getFullYear()} Adaptive AI Systems. All rights reserved.</span>
+            <span className="font-bold text-sm text-[#1A1A1A]">AdaptiveExam</span>
+            <span className="text-xs text-[#999]">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs text-[#8C827A] font-medium">
-            <a href="#about" className="hover:text-[#2D2A26] transition-colors">About</a>
-            <a href="#privacy" className="hover:text-[#2D2A26] transition-colors">Privacy Policy</a>
-            <a href="#terms" className="hover:text-[#2D2A26] transition-colors">Terms of Service</a>
-            <a href="#support" className="hover:text-[#2D2A26] transition-colors">Support</a>
+          <div className="flex items-center gap-6 text-xs text-[#999] font-medium">
+            <a href="#about" className="hover:text-[#1A1A1A] transition-colors">About</a>
+            <a href="#privacy" className="hover:text-[#1A1A1A] transition-colors">Privacy</a>
+            <a href="#terms" className="hover:text-[#1A1A1A] transition-colors">Terms</a>
+            <a href="#support" className="hover:text-[#1A1A1A] transition-colors">Support</a>
           </div>
         </div>
       </footer>

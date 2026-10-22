@@ -8,8 +8,6 @@ import {
   Menu,
   X,
   LogOut,
-  ExternalLink,
-  ChevronDown,
 } from 'lucide-react';
 
 export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSidebarOpen }) => {
@@ -28,7 +26,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#FAF7F2] border-b border-[#EFE7DE] px-4 sm:px-6 lg:px-8 py-3">
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E8E8E8] px-4 sm:px-6 lg:px-8 py-2.5">
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
         {/* Left: Brand & Mobile Sidebar Toggle */}
         <div className="flex items-center gap-3">
@@ -36,7 +34,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
             <button
               type="button"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-xl text-[#5C554E] hover:text-[#2D2A26] hover:bg-[#EFE7DE] lg:hidden focus:outline-none transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-lg text-[#999] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] lg:hidden focus:outline-none transition-colors"
               aria-label="Toggle navigation sidebar"
             >
               {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -44,28 +42,23 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           )}
 
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E07253] to-[#D96B4C] text-white shadow-md shadow-[#D96B4C]/25 transition-transform group-hover:scale-105">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E8612D] text-white transition-transform group-hover:scale-105">
+              <ShieldCheck className="h-4.5 w-4.5" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold tracking-tight text-base sm:text-lg text-[#2D2A26]">
-                Adaptive<span className="text-[#D96B4C]">Exam</span>
-              </span>
-              <span className="text-[11px] text-[#8C827A] font-medium leading-none hidden sm:inline">
-                AI Proctoring & Risk Engine
-              </span>
-            </div>
+            <span className="font-bold text-[15px] text-[#1A1A1A] tracking-tight">
+              Adaptive<span className="text-[#E8612D]">Exam</span>
+            </span>
           </Link>
         </div>
 
-        {/* Center: Search pill bar (styled like the inspiration image) */}
+        {/* Center: Search bar on dashboard pages */}
         {!isLandingPage && !isAuthPage && (
-          <div className="hidden md:flex flex-1 max-w-md mx-4 relative items-center">
-            <Search className="w-4 h-4 text-[#8C827A] absolute left-4 pointer-events-none" />
+          <div className="hidden md:flex flex-1 max-w-sm mx-4 relative items-center">
+            <Search className="w-4 h-4 text-[#999] absolute left-3 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search examinations, students, or proctor logs..."
-              className="w-full input-warm-pill text-xs focus:ring-2 focus:ring-[#D96B4C]/20"
+              placeholder="Search exams, students..."
+              className="w-full bg-[#F5F5F5] border border-transparent rounded-lg pl-10 pr-4 py-2 text-sm text-[#1A1A1A] placeholder-[#999] focus:outline-none focus:border-[#E8E8E8] focus:bg-white transition-colors"
               readOnly
               onClick={() => {
                 if (isTeacher) navigate('/teacher/exams');
@@ -75,99 +68,96 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           </div>
         )}
 
-        {/* Center: Public Links on Landing / Overview */}
+        {/* Center: Public navigation links */}
         {(isLandingPage || isAuthPage) && (
-          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#5C554E]">
-            <Link to="/" className="text-[#D96B4C] hover:text-[#C55C3E] transition-colors">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#555]">
+            <Link to="/" className="text-[#E8612D] hover:text-[#D4551F] transition-colors">
               Home
             </Link>
-            <a href="#features" className="hover:text-[#2D2A26] transition-colors">
+            <a href="#features" className="hover:text-[#1A1A1A] transition-colors">
               Features
             </a>
-            <a href="#about" className="hover:text-[#2D2A26] transition-colors">
-              Architecture
+            <a href="#about" className="hover:text-[#1A1A1A] transition-colors">
+              About
             </a>
           </nav>
         )}
 
-        {/* Right: Notification Bell, System Health & Auth Controls */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Inspiration Bell Pill with Alert indicator dot */}
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          {/* Notification bell */}
           {isAuthenticated && (
             <button
               type="button"
-              className="relative flex items-center justify-center h-9 w-9 rounded-full bg-white border border-[#EFE7DE] text-[#5C554E] hover:text-[#D96B4C] hover:border-[#D96B4C]/40 shadow-xs transition-all hover:scale-105"
-              title="Real-time Proctor Alerts"
+              className="relative flex items-center justify-center h-9 w-9 rounded-lg text-[#555] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors"
+              title="Notifications"
               onClick={() => {
                 if (isTeacher) navigate('/teacher/reports');
               }}
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-[18px] h-[18px]" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#10B981] ring-2 ring-white" />
             </button>
           )}
 
-          {/* Subtle System Status Pill */}
+          {/* System status indicator */}
           {healthStatus && (
             <button
               onClick={onRefreshHealth}
-              title="AWS Serverless Stack Health"
+              title="System Status"
               type="button"
-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border border-[#EFE7DE] bg-white text-[#5C554E] hover:bg-[#F3EAE2] transition-colors shadow-xs"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#555] hover:bg-[#F5F5F5] transition-colors"
             >
-              <span className="relative flex h-2 w-2">
-                <span
-                  className={`relative inline-flex rounded-full h-2 w-2 ${
-                    healthStatus.state === 'healthy'
-                      ? 'bg-emerald-500'
-                      : healthStatus.state === 'checking'
-                      ? 'bg-amber-400'
-                      : 'bg-rose-500'
-                  }`}
-                />
-              </span>
-              <span>{healthStatus.state === 'healthy' ? 'System Live' : 'Checking'}</span>
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  healthStatus.state === 'healthy'
+                    ? 'bg-emerald-500'
+                    : healthStatus.state === 'checking'
+                    ? 'bg-amber-400'
+                    : 'bg-rose-500'
+                }`}
+              />
+              <span>{healthStatus.state === 'healthy' ? 'Online' : 'Checking'}</span>
             </button>
           )}
 
-          {/* User Controls */}
+          {/* User controls */}
           {isAuthenticated && user ? (
-            <div className="flex items-center gap-2.5">
-              <div className="hidden sm:flex flex-col text-right">
-                <span className="text-xs font-bold text-[#2D2A26] leading-tight">
-                  {user.name}
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-[#D96B4C]">
-                  {user.role}
-                </span>
-              </div>
-
-              {/* Inspiration Avatar */}
-              <div className="h-9 w-9 rounded-2xl bg-[#FCEEE7] text-[#D96B4C] flex items-center justify-center font-extrabold text-xs border border-[#F5D7CD] shadow-xs">
-                {(user.name || 'U').charAt(0).toUpperCase()}
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-[#F5F5F5]">
+                <div className="h-7 w-7 rounded-lg bg-[#E8612D] text-white flex items-center justify-center font-semibold text-xs">
+                  {(user.name || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#1A1A1A] leading-tight">
+                    {user.name}
+                  </span>
+                  <span className="text-[10px] text-[#999] capitalize leading-tight">
+                    {user.role}
+                  </span>
+                </div>
               </div>
 
               <button
                 type="button"
                 onClick={handleLogout}
-                className="p-2 sm:px-3 sm:py-1.5 rounded-full border border-[#EFE7DE] bg-white text-[#5C554E] hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs"
+                className="flex items-center justify-center h-9 w-9 rounded-lg text-[#999] hover:text-rose-600 hover:bg-rose-50 transition-colors"
                 title="Sign Out"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sign Out</span>
+                <LogOut className="w-4 h-4" />
               </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-full text-xs font-semibold text-[#2D2A26] hover:text-[#D96B4C] hover:bg-white border border-[#EFE7DE] transition-all shadow-xs"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-[#555] hover:text-[#1A1A1A] hover:bg-[#F5F5F5] transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="btn-terracotta text-xs"
+                className="btn-terracotta text-sm py-2 px-4"
               >
                 Get Started
               </Link>
