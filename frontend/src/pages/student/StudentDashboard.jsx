@@ -259,7 +259,7 @@ export const StudentDashboard = () => {
                   <div className="pt-2 flex flex-wrap items-center gap-3">
                     <Link
                       to="/student/available"
-                      className="px-5 py-2.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 font-bold text-xs shadow-md transition-all flex items-center gap-2 hover:scale-[1.02]"
+                      className="px-5 py-2.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 font-bold text-xs shadow-md transition-all flex items-center gap-2 hover:scale-[1.02]"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
                       <span>Browse Available Tests</span>

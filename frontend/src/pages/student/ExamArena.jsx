@@ -380,8 +380,8 @@ export const ExamArena = () => {
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex flex-col items-center justify-center space-y-4">
-        <div className="w-8 h-8 rounded-full border-3 border-[#2563EB] border-t-transparent animate-spin" />
-        <p className="text-xs font-semibold text-[#64748B]">Preparing examination session...</p>
+        <div className="w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white border-t-transparent animate-spin" />
+        <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Preparing examination session...</p>
       </div>
     );
   }
@@ -389,15 +389,15 @@ export const ExamArena = () => {
   // Error State
   if (loadError) {
     return (
-      <div className="max-w-md mx-auto my-12 bg-white border border-[#E2E8F0] rounded-2xl p-8 text-center space-y-4 shadow-xs">
-        <div className="h-12 w-12 rounded-2xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center">
+      <div className="max-w-md mx-auto my-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 text-center space-y-4 shadow-sm">
+        <div className="h-12 w-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 mx-auto flex items-center justify-center">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-base font-bold text-[#172033]">Unable to Enter Examination</h2>
-        <p className="text-xs text-[#64748B] leading-relaxed">{loadError}</p>
+        <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Unable to Enter Examination</h2>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">{loadError}</p>
         <button
           onClick={() => navigate('/student')}
-          className="px-4 py-2 rounded-xl bg-[#2563EB] text-white text-xs font-semibold shadow-xs"
+          className="px-5 py-2.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-xs transition-all cursor-pointer"
         >
           Return to Student Portal
         </button>
@@ -408,18 +408,18 @@ export const ExamArena = () => {
   // Genuinely Empty Exam State (Issue 2 Requirement)
   if (!isLoading && !loadError && questions.length === 0) {
     return (
-      <div className="max-w-md mx-auto my-12 bg-white border border-[#E2E8F0] rounded-2xl p-8 text-center space-y-4 shadow-xs">
-        <div className="h-12 w-12 rounded-2xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center">
+      <div className="max-w-md mx-auto my-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 text-center space-y-4 shadow-sm">
+        <div className="h-12 w-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-base font-bold text-[#172033]">Exam Not Ready</h2>
-        <p className="text-xs text-[#64748B] leading-relaxed">
+        <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Exam Not Ready</h2>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
           This exam is not ready yet. Please contact your teacher.
         </p>
         <button
           type="button"
           onClick={() => navigate('/student')}
-          className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+          className="px-5 py-2.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-xs transition-all cursor-pointer"
         >
           Return to Student Dashboard
         </button>
@@ -430,56 +430,56 @@ export const ExamArena = () => {
   // Pre-flight Entrance Screen
   if (!hasEnteredArena) {
     return (
-      <div className="max-w-2xl mx-auto my-12 bg-white border border-[#E2E8F0] rounded-2xl p-8 text-center space-y-6 shadow-sm">
+      <div className="max-w-2xl mx-auto my-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 text-center space-y-6 shadow-sm">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#2563EB] border border-blue-200 text-xs font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold">
             <span>{exam?.courseCode || 'ASSESSMENT'}</span>
             <span>•</span>
             <span>Proctored Assessment</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#172033] tracking-tight">{exam?.title}</h1>
-          <p className="text-xs text-[#64748B] max-w-lg mx-auto leading-relaxed">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">{exam?.title}</h1>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-lg mx-auto leading-relaxed">
             Please test your camera device before starting the assessment. Your proctored session will operate securely in fullscreen mode.
           </p>
         </div>
 
         {/* Exam Quick Specs */}
-        <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+        <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Duration</span>
-            <span className="text-sm font-bold text-[#172033]">{exam?.durationMinutes} mins</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Duration</span>
+            <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{exam?.durationMinutes} mins</span>
           </div>
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Questions</span>
-            <span className="text-sm font-bold text-[#2563EB]">{questions.length} Items</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Questions</span>
+            <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{questions.length} Items</span>
           </div>
           <div>
-            <span className="text-[11px] text-[#64748B] block font-medium">Passing Marks</span>
-            <span className="text-sm font-bold text-emerald-600">
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Passing Marks</span>
+            <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
               {exam?.passingMarks} / {exam?.totalMarks || 20}
             </span>
           </div>
         </div>
 
         {/* Camera Preview & Identity Enrollment */}
-        <div className="p-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] space-y-4 text-left">
+        <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 space-y-4 text-left">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#172033] flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-[#2563EB]" />
+            <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+              <Camera className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
               <span>Camera & Identity Verification Gate</span>
             </span>
-            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+            <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
               preflightStatus === 'verified'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                 : preflightStatus === 'unavailable'
-                ? 'bg-slate-100 text-slate-600 border-slate-200'
-                : 'bg-blue-50 text-[#2563EB] border-blue-200'
+                ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-600'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
             }`}>
               {preflightStatus === 'verified' ? 'Camera Active' : preflightStatus === 'unavailable' ? 'Proctoring Unavailable' : 'Ready to Test'}
             </span>
           </div>
 
-          <div className="relative aspect-video max-w-sm mx-auto bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center">
+          <div className="relative aspect-video max-w-sm mx-auto bg-zinc-950 rounded-2xl overflow-hidden flex items-center justify-center border border-zinc-800">
             <video
               ref={preflightVideoRef}
               autoPlay
@@ -489,8 +489,8 @@ export const ExamArena = () => {
             />
             {!isPreflightCameraActive && (
               <div className="text-center p-4 space-y-2">
-                <Camera className="w-8 h-8 text-slate-500 mx-auto" />
-                <p className="text-xs text-slate-400">Click below to activate camera preview</p>
+                <Camera className="w-8 h-8 text-zinc-500 mx-auto" />
+                <p className="text-xs text-zinc-400">Click below to activate camera preview</p>
               </div>
             )}
           </div>
@@ -499,29 +499,29 @@ export const ExamArena = () => {
             <button
               type="button"
               onClick={startPreflightCamera}
-              className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#172033] font-semibold text-xs border border-[#E2E8F0] transition-colors cursor-pointer"
+              className="w-full py-2.5 rounded-full bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-semibold text-xs border border-zinc-300 dark:border-zinc-700 transition-colors cursor-pointer"
             >
               Activate Camera Feed
             </button>
           ) : (
             <div className="space-y-2 pt-1">
               {/* Identity Reference Photo Section */}
-              <div className="p-3 rounded-lg bg-white border border-[#E2E8F0] space-y-2">
+              <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#172033] flex items-center gap-1.5">
-                    <ScanFace className="w-4 h-4 text-[#2563EB]" />
+                  <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <ScanFace className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
                     <span>Candidate Reference Identity</span>
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                     referenceStatus?.hasReferenceImage
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                      : 'bg-amber-50 text-amber-800 border-amber-200'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
                   }`}>
                     {referenceStatus?.hasReferenceImage ? 'Enrolled' : 'Not Enrolled'}
                   </span>
                 </div>
 
-                <p className="text-[11px] text-[#64748B]">
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                   {referenceStatus?.hasReferenceImage
                     ? 'Your face identity is enrolled. Amazon Rekognition CompareFaces will verify candidate identity at session start.'
                     : 'To enable AI Candidate Identity Verification, capture a reference face photo now. Exactly 1 front-facing face must be clearly visible.'}
@@ -530,8 +530,8 @@ export const ExamArena = () => {
                 {enrollmentMsg && (
                   <div className={`p-2 rounded-lg text-xs font-medium border ${
                     enrollmentMsg.type === 'success'
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-rose-50 text-rose-800 border-rose-200'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
+                      : 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border-rose-200 dark:border-rose-800'
                   }`}>
                     {enrollmentMsg.text}
                   </div>
@@ -541,7 +541,7 @@ export const ExamArena = () => {
                   type="button"
                   onClick={handleEnrollReference}
                   disabled={isEnrollingReference}
-                  className="w-full py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#2563EB] font-semibold text-xs border border-blue-200 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full py-2 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-semibold text-xs border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <ScanFace className={`w-3.5 h-3.5 ${isEnrollingReference ? 'animate-spin' : ''}`} />
                   <span>
@@ -560,7 +560,7 @@ export const ExamArena = () => {
         <button
           type="button"
           onClick={handleEnterArena}
-          className="w-full py-3 px-6 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+          className="w-full py-3 px-6 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 font-bold text-sm shadow-md transition-all cursor-pointer"
         >
           Begin Examination Now
         </button>
@@ -573,40 +573,40 @@ export const ExamArena = () => {
     const isPassed = examResult.isPassed ?? (examResult.score >= (exam?.passingMarks || 10));
 
     return (
-      <div className="max-w-lg mx-auto my-12 bg-white border border-[#E2E8F0] rounded-2xl p-8 text-center space-y-6 shadow-sm">
+      <div className="max-w-lg mx-auto my-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 text-center space-y-6 shadow-sm">
         <div className={`h-14 w-14 rounded-2xl mx-auto flex items-center justify-center ${
-          isPassed ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+          isPassed ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
         }`}>
           {isPassed ? <CheckCircle2 className="w-8 h-8" /> : <AlertTriangle className="w-8 h-8" />}
         </div>
 
         <div className="space-y-1">
-          <h2 className="text-2xl font-extrabold text-[#172033]">
+          <h2 className="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100">
             {isPassed ? 'Assessment Completed' : 'Examination Submitted'}
           </h2>
-          <p className="text-xs text-[#64748B]">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Your examination responses have been recorded and cryptographically sealed.
           </p>
         </div>
 
-        <div className="p-5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-3">
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-[#E2E8F0]">
-            <span className="text-[#64748B]">Score Achieved:</span>
-            <span className="font-bold text-[#172033] text-sm">
+        <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-zinc-200 dark:border-zinc-700/60">
+            <span className="text-zinc-500 dark:text-zinc-400">Score Achieved:</span>
+            <span className="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
               {examResult.score} / {exam?.totalMarks || 20} pts
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-[#E2E8F0]">
-            <span className="text-[#64748B]">Assessment Status:</span>
-            <span className={`font-bold ${isPassed ? 'text-emerald-600' : 'text-rose-600'}`}>
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-zinc-200 dark:border-zinc-700/60">
+            <span className="text-zinc-500 dark:text-zinc-400">Assessment Status:</span>
+            <span className={`font-bold ${isPassed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
               {isPassed ? 'Passed' : 'Needs Review'}
             </span>
           </div>
 
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[#64748B]">Proctoring Risk Level:</span>
-            <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+            <span className="text-zinc-500 dark:text-zinc-400">Proctoring Risk Level:</span>
+            <span className="font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
               Low (Normal Session)
             </span>
           </div>
@@ -615,7 +615,7 @@ export const ExamArena = () => {
         <button
           type="button"
           onClick={() => navigate('/student')}
-          className="w-full py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors"
+          className="w-full py-3 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 font-bold text-xs shadow-md transition-all cursor-pointer"
         >
           Return to Student Dashboard
         </button>
@@ -631,23 +631,23 @@ export const ExamArena = () => {
   const answeredCount = Object.values(answersState).filter((a) => a.selectedOptionIndex !== null && a.selectedOptionIndex !== undefined).length;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#172033] flex flex-col">
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex flex-col">
       {/* Top Fixed Exam Control Header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0] shadow-xs px-4 sm:px-6 py-3">
+      <header className="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-xs px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Exam Title & Course Code */}
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-[#2563EB] border border-blue-200">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
               {exam?.courseCode || 'EXAM'}
             </span>
-            <h2 className="text-sm sm:text-base font-bold text-[#172033] truncate max-w-xs sm:max-w-md">
+            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-xs sm:max-w-md">
               {exam?.title}
             </h2>
           </div>
 
           {/* Center: Proctoring Status Indicator */}
-          <div className="hidden sm:flex items-center gap-2.5 px-3 py-1 rounded-full bg-slate-50 border border-[#E2E8F0] text-xs">
+          <div className="hidden sm:flex items-center gap-2.5 px-3 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-xs">
             <span className="relative flex h-2 w-2">
               <span className={`relative inline-flex rounded-full h-2 w-2 ${
                 riskLevel === 'CRITICAL' || riskLevel === 'HIGH'
@@ -656,25 +656,25 @@ export const ExamArena = () => {
                   ? 'bg-amber-400 animate-pulse'
                   : isCameraActive
                   ? 'bg-emerald-500'
-                  : 'bg-slate-400'
+                  : 'bg-zinc-400'
               }`}></span>
             </span>
-            <span className={`text-xs font-semibold ${isCameraActive ? 'text-[#172033]' : 'text-[#64748B]'}`}>
+            <span className={`text-xs font-semibold ${isCameraActive ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400'}`}>
               Camera: {isCameraActive ? 'Active' : 'Offline'}
             </span>
-            <span className="text-slate-300">•</span>
-            <span className="text-[11px] text-[#64748B]">
+            <span className="text-zinc-300 dark:text-zinc-600">•</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
               AI: {aiAnalysisStatus === 'CONNECTED' ? 'Connected' : aiAnalysisStatus === 'ANALYZING' ? 'Analyzing...' : aiAnalysisStatus === 'ANALYSIS_DELAYED' ? 'Delayed' : 'Unavailable'}
             </span>
-            <span className="text-slate-300">•</span>
+            <span className="text-zinc-300 dark:text-zinc-600">•</span>
             <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
               riskLevel === 'CRITICAL'
-                ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                 : riskLevel === 'HIGH'
-                ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                 : riskLevel === 'MEDIUM'
-                ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
             }`}>
               Risk: {riskLevel} ({riskScore}/100)
             </span>
@@ -682,19 +682,19 @@ export const ExamArena = () => {
 
           {/* Right: Timer & Submit Button */}
           <div className="flex items-center gap-3">
-            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-xs font-bold border ${
+            <div className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-mono text-xs font-bold border ${
               remainingSeconds < 300
-                ? 'bg-rose-50 border-rose-200 text-rose-700 animate-pulse'
-                : 'bg-slate-50 border-[#E2E8F0] text-[#172033]'
+                ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400 animate-pulse'
+                : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100'
             }`}>
-              <Clock className="w-3.5 h-3.5 text-blue-600" />
+              <Clock className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
               <span>{formatTime(remainingSeconds)}</span>
             </div>
 
             <button
               type="button"
               onClick={() => setIsSubmitModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Submit Exam</span>
             </button>
@@ -711,10 +711,10 @@ export const ExamArena = () => {
           
           {/* Proctoring Warning / Incident Toast Banner */}
           {latestAlert && (
-            <div className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-semibold shadow-xs animate-in fade-in slide-in-from-top-2 duration-200 ${
+            <div className={`p-3.5 rounded-2xl border flex items-center justify-between text-xs font-semibold shadow-xs animate-in fade-in slide-in-from-top-2 duration-200 ${
               latestAlert.severity === 'critical'
-                ? 'bg-rose-50 border-rose-200 text-rose-800'
-                : 'bg-amber-50 border-amber-200 text-amber-900'
+                ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-200'
+                : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200'
             }`}>
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
@@ -730,27 +730,27 @@ export const ExamArena = () => {
             </div>
           )}
 
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
             
             {/* Question Header & Meta */}
-            <div className="flex items-center justify-between pb-4 border-b border-[#E2E8F0]">
-              <span className="text-xs font-bold text-[#2563EB] bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-700">
                 Question {currentQIndex + 1} of {totalQuestions}
               </span>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs text-[#64748B]">
-                  Points: <strong className="text-[#172033]">{currentQuestion?.marks || 1}</strong>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Points: <strong className="text-zinc-900 dark:text-zinc-100">{currentQuestion?.marks || 1}</strong>
                 </span>
-                <span className="text-slate-300">•</span>
-                <span className="text-[11px] text-[#64748B]">
+                <span className="text-zinc-300 dark:text-zinc-600">•</span>
+                <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
                   {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Auto-save'}
                 </span>
               </div>
             </div>
 
             {/* Question Text */}
-            <div className="text-base sm:text-lg font-medium text-[#172033] leading-relaxed">
+            <div className="text-base sm:text-lg font-medium text-zinc-900 dark:text-zinc-100 leading-relaxed">
               {currentQuestion?.text}
             </div>
 
@@ -764,38 +764,38 @@ export const ExamArena = () => {
                     key={idx}
                     type="button"
                     onClick={() => handleSelectOption(idx)}
-                    className={`w-full p-4 rounded-xl text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between border cursor-pointer ${
+                    className={`w-full p-4 rounded-2xl text-left text-xs sm:text-sm font-medium transition-all flex items-center justify-between border cursor-pointer ${
                       isSelected
-                        ? 'bg-blue-50/70 border-2 border-[#2563EB] text-[#172033]'
-                        : 'bg-white border-[#E2E8F0] text-[#172033] hover:border-slate-300 hover:bg-slate-50/50'
+                        ? 'bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-900 dark:border-white text-zinc-950 dark:text-white shadow-xs'
+                        : 'bg-white dark:bg-zinc-900/60 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/40'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      <div className={`h-7 w-7 rounded-xl flex items-center justify-center text-xs font-bold transition-colors ${
                         isSelected
-                          ? 'bg-[#2563EB] text-white'
-                          : 'border border-slate-300 text-[#64748B]'
+                          ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
+                          : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300'
                       }`}>
                         {String.fromCharCode(65 + idx)}
                       </div>
                       <span>{optionText}</span>
                     </div>
 
-                    {isSelected && <Check className="w-4 h-4 text-[#2563EB] flex-shrink-0" />}
+                    {isSelected && <Check className="w-4 h-4 text-zinc-900 dark:text-white flex-shrink-0" />}
                   </button>
                 );
               })}
             </div>
 
             {/* Bottom Actions: Clear Choice & Mark for Review */}
-            <div className="flex items-center justify-between pt-4 border-t border-[#E2E8F0] text-xs">
+            <div className="flex items-center justify-between pt-4 border-t border-zinc-200 dark:border-zinc-800 text-xs">
               <button
                 type="button"
                 onClick={handleToggleReview}
-                className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 font-medium transition-colors ${
+                className={`px-4 py-2 rounded-full border flex items-center gap-1.5 font-medium transition-colors cursor-pointer ${
                   currentAnswer?.isMarkedForReview
-                    ? 'bg-amber-50 text-amber-800 border-amber-300'
-                    : 'bg-white text-[#64748B] border-[#E2E8F0] hover:bg-slate-50'
+                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                 }`}
               >
                 <Flag className="w-3.5 h-3.5" />
@@ -806,7 +806,7 @@ export const ExamArena = () => {
                 type="button"
                 onClick={handleClearAnswer}
                 disabled={currentAnswer?.selectedOptionIndex === null || currentAnswer?.selectedOptionIndex === undefined}
-                className="text-xs text-[#64748B] hover:text-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
                 Clear choice
               </button>
@@ -820,7 +820,7 @@ export const ExamArena = () => {
               type="button"
               onClick={() => setCurrentQIndex((prev) => Math.max(0, prev - 1))}
               disabled={currentQIndex === 0}
-              className="px-4 py-2 rounded-xl bg-white border border-[#E2E8F0] text-xs font-semibold text-[#172033] hover:bg-slate-50 disabled:opacity-40 flex items-center gap-1.5 shadow-xs"
+              className="px-5 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-40 flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Previous</span>
@@ -830,7 +830,7 @@ export const ExamArena = () => {
               type="button"
               onClick={() => setCurrentQIndex((prev) => Math.min(totalQuestions - 1, prev + 1))}
               disabled={currentQIndex === totalQuestions - 1}
-              className="px-4 py-2 rounded-xl bg-[#2563EB] text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-40 flex items-center gap-1.5 shadow-xs"
+              className="px-5 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
             >
               <span>Next</span>
               <ChevronRight className="w-4 h-4" />
@@ -842,23 +842,23 @@ export const ExamArena = () => {
         <div className="lg:col-span-4 space-y-4">
           
           {/* Section 7: Real-Time AI Proctoring Telemetry HUD */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-xs space-y-3.5">
-            <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0]">
-              <span className="text-xs font-bold text-[#172033] flex items-center gap-1.5">
-                <Camera className="w-4 h-4 text-[#2563EB]" />
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3.5">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
                 <span>AI Proctoring HUD</span>
               </span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border ${
                 aiAnalysisMode === 'aws-live'
-                  ? 'bg-blue-50 text-blue-700 border-blue-200'
-                  : 'bg-amber-50 text-amber-800 border-amber-200'
+                  ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
               }`}>
                 {aiAnalysisMode === 'aws-live' ? 'AWS-LIVE' : 'MOCK'}
               </span>
             </div>
 
             {/* Live Video Viewport */}
-            <div className="relative aspect-video bg-slate-950 rounded-xl overflow-hidden flex items-center justify-center border border-slate-800 shadow-inner">
+            <div className="relative aspect-video bg-zinc-950 rounded-2xl overflow-hidden flex items-center justify-center border border-zinc-800 shadow-inner">
               <video
                 ref={videoRef}
                 autoPlay
@@ -876,7 +876,7 @@ export const ExamArena = () => {
               )}
 
               {isCameraActive && isAnalyzing && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 bg-blue-600/80 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-md">
+                <div className="absolute top-2 right-2 flex items-center gap-1 bg-zinc-900/80 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10">
                   <RefreshCw className="w-2.5 h-2.5 animate-spin" />
                   <span>Analyzing</span>
                 </div>
@@ -884,8 +884,8 @@ export const ExamArena = () => {
 
               {!isCameraActive && (
                 <div className="text-center p-4 space-y-2.5 z-10">
-                  <Camera className="w-8 h-8 text-slate-500 mx-auto" />
-                  <p className="text-xs text-slate-300 max-w-[200px] leading-relaxed">
+                  <Camera className="w-8 h-8 text-zinc-500 mx-auto" />
+                  <p className="text-xs text-zinc-400 max-w-[200px] leading-relaxed">
                     {cameraStatus === 'Permission Denied'
                       ? 'Camera permission denied. Click below to retry.'
                       : 'Webcam feed is currently inactive.'}
@@ -893,7 +893,7 @@ export const ExamArena = () => {
                   <button
                     type="button"
                     onClick={() => startCamera && startCamera()}
-                    className="px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                    className="px-4 py-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-semibold text-xs shadow-xs transition-colors cursor-pointer"
                   >
                     Enable Camera
                   </button>
@@ -904,25 +904,25 @@ export const ExamArena = () => {
             {/* Section 7 Granular Diagnostics Grid */}
             <div className="space-y-2 text-xs pt-1">
               {/* Camera */}
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-[#64748B] font-medium">Camera</span>
-                <span className={`font-semibold flex items-center gap-1.5 ${isCameraActive ? 'text-emerald-700' : 'text-rose-600'}`}>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Camera</span>
+                <span className={`font-semibold flex items-center gap-1.5 ${isCameraActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${isCameraActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                   {isCameraActive ? 'Active' : cameraStatus || 'Offline'}
                 </span>
               </div>
 
               {/* Face Count & Presence */}
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-[#64748B] font-medium">Face</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Face</span>
                 <span className={`font-semibold ${
                   faceStatus === 'SINGLE_FACE_DETECTED'
-                    ? 'text-emerald-700'
+                    ? 'text-emerald-600 dark:text-emerald-400'
                     : faceStatus === 'MULTIPLE_FACES'
-                    ? 'text-rose-600'
+                    ? 'text-rose-600 dark:text-rose-400'
                     : faceStatus === 'NO_FACE_DETECTED'
-                    ? 'text-amber-700'
-                    : 'text-slate-500'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-zinc-500 dark:text-zinc-400'
                 }`}>
                   {faceStatus === 'SINGLE_FACE_DETECTED'
                     ? '1 detected'
@@ -935,12 +935,12 @@ export const ExamArena = () => {
               </div>
 
               {/* Phone / Object Analysis */}
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-[#64748B] font-medium">Phone</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Phone</span>
                 <span className={`font-semibold ${
                   phoneStatus === 'PHONE_DETECTED' || phoneStatus === 'DETECTED'
-                    ? 'text-rose-600 font-bold'
-                    : 'text-emerald-700'
+                    ? 'text-rose-600 dark:text-rose-400 font-bold'
+                    : 'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   {phoneStatus === 'PHONE_DETECTED' || phoneStatus === 'DETECTED'
                     ? `🚨 Detected (${phoneConfidence}%)`
@@ -949,16 +949,16 @@ export const ExamArena = () => {
               </div>
 
               {/* Candidate Identity Verification */}
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-[#64748B] font-medium">Identity</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium">Identity</span>
                 <span className={`font-semibold ${
                   identityStatus === 'IDENTITY_MATCH'
-                    ? 'text-emerald-700'
+                    ? 'text-emerald-600 dark:text-emerald-400'
                     : identityStatus === 'IDENTITY_MISMATCH'
-                    ? 'text-rose-600'
+                    ? 'text-rose-600 dark:text-rose-400'
                     : identityStatus === 'IDENTITY_REVIEW_REQUIRED'
-                    ? 'text-amber-700'
-                    : 'text-slate-500'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-zinc-500 dark:text-zinc-400'
                 }`}>
                   {identityStatus === 'IDENTITY_MATCH'
                     ? `Verified at start ${identitySimilarity ? `(${identitySimilarity}%)` : ''}`
@@ -971,16 +971,16 @@ export const ExamArena = () => {
               </div>
 
               {/* AWS Analysis Connectivity */}
-              <div className="flex items-center justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-[#64748B] font-medium">AI Analysis</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800">
+                <span className="text-zinc-500 dark:text-zinc-400 font-medium">AI Analysis</span>
                 <span className={`font-semibold ${
                   aiAnalysisStatus === 'CONNECTED'
-                    ? 'text-emerald-700'
+                    ? 'text-emerald-600 dark:text-emerald-400'
                     : aiAnalysisStatus === 'ANALYZING'
-                    ? 'text-blue-600'
+                    ? 'text-zinc-900 dark:text-zinc-100'
                     : aiAnalysisStatus === 'ANALYSIS_DELAYED'
-                    ? 'text-amber-700'
-                    : 'text-rose-600'
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-rose-600 dark:text-rose-400'
                 }`}>
                   {aiAnalysisStatus === 'CONNECTED'
                     ? 'Connected'
@@ -993,18 +993,18 @@ export const ExamArena = () => {
               </div>
 
               {/* Authoritative Risk Level */}
-              <div className="p-2.5 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] space-y-1.5">
+              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#64748B] font-medium">Current Risk</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 font-medium">Current Risk</span>
                   <span className={`font-bold ${
-                    riskLevel === 'CRITICAL' ? 'text-rose-600' :
-                    riskLevel === 'HIGH' ? 'text-orange-600' :
-                    riskLevel === 'MEDIUM' ? 'text-amber-600' : 'text-emerald-600'
+                    riskLevel === 'CRITICAL' ? 'text-rose-600 dark:text-rose-400' :
+                    riskLevel === 'HIGH' ? 'text-orange-600 dark:text-orange-400' :
+                    riskLevel === 'MEDIUM' ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
                   }`}>
                     {riskLevel} — {riskScore}/100
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
                       riskLevel === 'CRITICAL' ? 'bg-rose-600' :
@@ -1017,7 +1017,7 @@ export const ExamArena = () => {
               </div>
 
               {/* Last Analysis Timestamp */}
-              <div className="flex items-center justify-between text-[11px] text-[#64748B] px-1 pt-1">
+              <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-1 pt-1">
                 <span>Last analysis:</span>
                 <span className="font-mono">
                   {lastAnalysisTime ? new Date(lastAnalysisTime).toLocaleTimeString() : 'Pending first scan'}
@@ -1029,7 +1029,7 @@ export const ExamArena = () => {
                 type="button"
                 onClick={() => triggerManualAnalysis && triggerManualAnalysis()}
                 disabled={isAnalyzing || !isCameraActive}
-                className="w-full mt-2 py-1.5 rounded-lg border border-[#E2E8F0] hover:bg-slate-50 text-[11px] font-semibold text-[#2563EB] transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full mt-2 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className={`w-3 h-3 ${isAnalyzing ? 'animate-spin' : ''}`} />
                 <span>{isAnalyzing ? 'Analyzing Frame...' : 'Test AI Analysis Now'}</span>
@@ -1038,10 +1038,10 @@ export const ExamArena = () => {
           </div>
 
           {/* Question Navigation Palette */}
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0]">
-              <span className="text-xs font-bold text-[#172033]">Question Palette</span>
-              <span className="text-xs text-[#64748B]">{answeredCount} of {totalQuestions} answered</span>
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
+              <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Question Palette</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">{answeredCount} of {totalQuestions} answered</span>
             </div>
 
             {/* Grid of Numbers */}
@@ -1053,12 +1053,12 @@ export const ExamArena = () => {
                 const isReview = ans?.isMarkedForReview;
                 const isCurrent = idx === currentQIndex;
 
-                let pillColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                let pillColor = 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700';
                 if (isSelected) {
-                  pillColor = 'bg-[#2563EB] text-white border-[#2563EB] font-bold';
+                  pillColor = 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 border-zinc-900 dark:border-white font-bold';
                 }
                 if (isReview) {
-                  pillColor = 'bg-amber-100 text-amber-800 border-amber-300 font-bold';
+                  pillColor = 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 font-bold';
                 }
 
                 return (
@@ -1067,7 +1067,7 @@ export const ExamArena = () => {
                     type="button"
                     onClick={() => setCurrentQIndex(idx)}
                     className={`h-9 rounded-xl text-xs font-semibold border flex items-center justify-center transition-all cursor-pointer ${pillColor} ${
-                      isCurrent ? 'ring-2 ring-offset-1 ring-blue-600' : ''
+                      isCurrent ? 'ring-2 ring-offset-1 ring-zinc-900 dark:ring-white' : ''
                     }`}
                   >
                     {idx + 1}
@@ -1077,17 +1077,17 @@ export const ExamArena = () => {
             </div>
 
             {/* Legend */}
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#E2E8F0] text-[11px] text-[#64748B]">
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-[#2563EB]"></span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-zinc-900 dark:bg-white"></span>
                 <span>Answered</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-amber-200"></span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-amber-400"></span>
                 <span>Review</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-slate-200"></span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-zinc-300 dark:bg-zinc-700"></span>
                 <span>Unvisited</span>
               </div>
             </div>
@@ -1100,43 +1100,43 @@ export const ExamArena = () => {
 
       {/* Confirmation Modal Before Final Submission */}
       {isSubmitModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-xl max-w-md w-full p-6 space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl max-w-md w-full p-6 sm:p-7 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-[#172033]">Confirm Exam Submission</h3>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Confirm Exam Submission</h3>
               <button
                 type="button"
                 onClick={() => setIsSubmitModalOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-[#64748B] leading-relaxed">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
               Are you sure you want to finish and submit your examination? Once submitted, your answers cannot be altered.
             </p>
 
-            <div className="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs space-y-1">
-              <div className="flex justify-between text-[#172033]">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-xs space-y-1.5">
+              <div className="flex justify-between text-zinc-900 dark:text-zinc-100">
                 <span>Total Questions:</span>
                 <span className="font-bold">{totalQuestions}</span>
               </div>
-              <div className="flex justify-between text-[#2563EB]">
+              <div className="flex justify-between text-zinc-900 dark:text-zinc-100">
                 <span>Answered Questions:</span>
                 <span className="font-bold">{answeredCount}</span>
               </div>
-              <div className="flex justify-between text-[#64748B]">
+              <div className="flex justify-between text-zinc-500 dark:text-zinc-400">
                 <span>Unanswered Questions:</span>
                 <span>{totalQuestions - answeredCount}</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2">
+            <div className="flex items-center justify-end gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setIsSubmitModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-[#E2E8F0] text-[#64748B] text-xs font-semibold hover:bg-slate-50"
+                className="px-4 py-2 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               >
                 Return to Exam
               </button>
@@ -1144,7 +1144,7 @@ export const ExamArena = () => {
                 type="button"
                 onClick={handleFinalSubmit}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5"
+                className="px-5 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 {isSubmitting ? 'Submitting...' : 'Yes, Submit Final Exam'}
               </button>

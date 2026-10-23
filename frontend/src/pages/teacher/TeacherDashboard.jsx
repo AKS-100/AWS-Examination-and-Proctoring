@@ -469,7 +469,7 @@ export const TeacherDashboard = () => {
                 <div className="pt-2 flex flex-wrap items-center gap-3">
                   <Link
                     to="/teacher/create-exam"
-                    className="px-5 py-2.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-100 text-xs font-bold shadow-md transition-all hover:scale-105 inline-flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-bold shadow-md transition-all hover:scale-105 inline-flex items-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Author New Assessment</span>

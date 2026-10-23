@@ -261,12 +261,20 @@
   border-color: #27272a !important;
 }
 
-.dark .bg-white {
+.dark .text-\[\#172033\] {
+  color: #f4f4f5 !important;
+}
+
+.dark .text-\[\#64748B\] {
+  color: #a1a1aa !important;
+}
+
+.dark .bg-\[\#F8FAFC\] {
   background-color: #121215 !important;
 }
 
-.dark .bg-white\/80 {
-  background-color: rgba(18, 18, 21, 0.85) !important;
+.dark .border-\[\#E2E8F0\] {
+  border-color: #27272a !important;
 }
 
 .dark .bg-\[\#F5F5F5\] {
