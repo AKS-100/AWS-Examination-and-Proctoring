@@ -260,3 +260,39 @@
   color: #FCD34D !important;
 }
 
+.dark .bg-\[\#FAFAFA\] {
+  background-color: #121110 !important;
+}
+
+.dark .hover\:bg-\[\#FAFAFA\]:hover {
+  background-color: #1C1A18 !important;
+}
+
+.dark .hover\:bg-white:hover {
+  background-color: #262320 !important;
+}
+
+.dark .bg-\[\#FFF4F0\] {
+  background-color: #2A1A14 !important;
+}
+
+.dark .border-\[\#FFD9CC\] {
+  border-color: #4A281E !important;
+}
+
+.dark .bg-\[\#FEF3C7\] {
+  background-color: rgba(217, 119, 6, 0.2) !important;
+}
+
+.dark .bg-\[\#D1FAE5\] {
+  background-color: rgba(5, 150, 105, 0.2) !important;
+}
+
+.dark .text-\[\#999\] {
+  color: #8C827A !important;
+}
+
+.dark .border-\[\#D0D0D0\] {
+  border-color: #47423D !important;
+}
+

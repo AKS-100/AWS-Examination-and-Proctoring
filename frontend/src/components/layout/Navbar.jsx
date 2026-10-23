@@ -46,11 +46,11 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           )}
 
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#E8612D] text-white transition-transform group-hover:scale-105 shadow-xs">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white transition-transform group-hover:scale-105 shadow-sm shadow-[#E8612D]/20">
               <ShieldCheck className="h-4.5 w-4.5" />
             </div>
             <span className="font-bold text-[15px] text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight transition-colors">
-              Adaptive<span className="text-[#E8612D]">Exam</span>
+              Adaptive<span className="text-[#E8612D] dark:text-[#FF7A45]">Exam</span>
             </span>
           </Link>
         </div>
@@ -144,7 +144,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#262320]">
-                <div className="h-7 w-7 rounded-lg bg-[#E8612D] text-white flex items-center justify-center font-semibold text-xs">
+                <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center font-semibold text-xs shadow-xs">
                   {(user.name || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div className="flex flex-col">

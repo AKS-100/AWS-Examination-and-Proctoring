@@ -145,13 +145,13 @@ export const RegisterPage = () => {
 
         {/* Page Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8612D] text-white mx-auto">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white mx-auto shadow-md shadow-[#E8612D]/20">
             <ShieldCheck className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+          <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight">
             {isVerificationStep ? 'Verify your email' : 'Create an account'}
           </h1>
-          <p className="text-sm text-[#999]">
+          <p className="text-sm text-[#888] dark:text-[#8C827A]">
             {isVerificationStep
               ? `Enter the code sent to ${email}`
               : 'Get started with AdaptiveExam'}
@@ -165,33 +165,45 @@ export const RegisterPage = () => {
             <>
               {/* Role Toggle */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#999] block">
-                  I am a
+                <label className="text-xs font-semibold text-[#888] dark:text-[#8C827A] block">
+                  I am registering as
                 </label>
-                <div className="grid grid-cols-2 p-1 bg-[#F5F5F5] rounded-lg border border-[#E8E8E8]">
+                <div className="grid grid-cols-2 p-1 bg-[#F0ECE1] dark:bg-[#161412] rounded-xl border border-[#E5E0D5] dark:border-[#2A2622] gap-1">
                   <button
                     type="button"
                     onClick={() => setRole('student')}
-                    className={`py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'student'
-                        ? 'bg-white text-[#1A1A1A] shadow-sm'
-                        : 'text-[#999] hover:text-[#555]'
+                        ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm border border-black/5 dark:border-white/10'
+                        : 'text-[#888] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
                     }`}
                   >
-                    <GraduationCap className="w-4 h-4" />
+                    <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+                      role === 'student'
+                        ? 'bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50]'
+                        : 'bg-transparent text-current'
+                    }`}>
+                      <GraduationCap className="w-4 h-4" />
+                    </span>
                     <span>Student</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setRole('teacher')}
-                    className={`py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'teacher'
-                        ? 'bg-white text-[#1A1A1A] shadow-sm'
-                        : 'text-[#999] hover:text-[#555]'
+                        ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm border border-black/5 dark:border-white/10'
+                        : 'text-[#888] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4" />
+                    <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+                      role === 'teacher'
+                        ? 'bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50]'
+                        : 'bg-transparent text-current'
+                    }`}>
+                      <Briefcase className="w-4 h-4" />
+                    </span>
                     <span>Teacher</span>
                   </button>
                 </div>
@@ -199,16 +211,16 @@ export const RegisterPage = () => {
 
               {/* Teacher info */}
               {role === 'teacher' && (
-                <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-700 flex items-start gap-2">
-                  <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+                  <Info className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
                   <span>Teacher accounts can create exams and view proctoring dashboards.</span>
                 </div>
               )}
 
               {/* Error */}
               {formError && (
-                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
                   <span>{formError}</span>
                 </div>
               )}
@@ -216,30 +228,30 @@ export const RegisterPage = () => {
               {/* Form */}
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] block">Full name</label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Full name</label>
+                  <div className="relative group">
+                    <User className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Jane Doe"
-                      className="input-warm-pill py-2.5 text-sm w-full"
+                      className="input-warm-pill pl-10.5 py-2.5 text-sm w-full"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] block">Email</label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Email</label>
+                  <div className="relative group">
+                    <Mail className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@university.edu"
-                      className="input-warm-pill py-2.5 text-sm w-full"
+                      className="input-warm-pill pl-10.5 py-2.5 text-sm w-full"
                       required
                       autoComplete="email"
                     />
@@ -248,38 +260,38 @@ export const RegisterPage = () => {
 
                 {role === 'student' && (
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-[#1A1A1A] block">
-                      Student ID <span className="text-[#999] font-normal">(optional)</span>
+                    <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">
+                      Student ID <span className="text-[#999] dark:text-[#8C827A] font-normal">(optional)</span>
                     </label>
-                    <div className="relative">
-                      <GraduationCap className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <div className="relative group">
+                      <GraduationCap className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                       <input
                         type="text"
                         value={studentId}
                         onChange={(e) => setStudentId(e.target.value)}
                         placeholder="CS-2026-001"
-                        className="input-warm-pill py-2.5 text-sm w-full"
+                        className="input-warm-pill pl-10.5 py-2.5 text-sm w-full"
                       />
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] block">Password</label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Password</label>
+                  <div className="relative group">
+                    <Lock className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Min. 8 characters"
-                      className="input-warm-pill pl-11 pr-11 py-2.5 text-sm w-full"
+                      className="input-warm-pill pl-10.5 pr-11 py-2.5 text-sm w-full"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#555]"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] transition-colors"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -288,15 +300,15 @@ export const RegisterPage = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] block">Confirm password</label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Confirm password</label>
+                  <div className="relative group">
+                    <Lock className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repeat password"
-                      className="input-warm-pill py-2.5 text-sm w-full"
+                      className="input-warm-pill pl-10.5 py-2.5 text-sm w-full"
                       required
                     />
                   </div>
@@ -318,11 +330,11 @@ export const RegisterPage = () => {
                 </button>
               </form>
 
-              <div className="text-center text-sm text-[#999] pt-1">
+              <div className="text-center text-sm text-[#888] dark:text-[#8C827A] pt-1">
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="text-[#E8612D] hover:text-[#D4551F] font-semibold"
+                  className="text-[#E8612D] dark:text-[#FF8A50] hover:text-[#D4551F] font-semibold transition-colors"
                 >
                   Sign in
                 </Link>
@@ -331,30 +343,32 @@ export const RegisterPage = () => {
           ) : (
             /* Verification Screen */
             <div className="space-y-4">
-              <div className="p-3 rounded-lg bg-[#F5F5F5] border border-[#E8E8E8] text-[#1A1A1A] text-sm flex items-start gap-3">
-                <KeyRound className="w-5 h-5 text-[#E8612D] flex-shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-[#F5F5F5] dark:bg-[#24211E] border border-[#E8E8E8] dark:border-[#2E2A25] text-[#1A1A1A] dark:text-[#FAF7F2] text-sm flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <KeyRound className="w-4 h-4" />
+                </div>
                 <span>
-                  A 6-digit code was sent to <strong>{email}</strong>. Enter it below to activate your account.
+                  A 6-digit code was sent to <strong className="text-[#1A1A1A] dark:text-white">{email}</strong>. Enter it below to activate your account.
                 </span>
               </div>
 
               {verificationSuccess && (
-                <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
                   <span>{verificationSuccess}</span>
                 </div>
               )}
 
               {verificationError && (
-                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>{verificationError}</span>
                 </div>
               )}
 
               <form onSubmit={handleVerifySubmit} className="space-y-3">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] block">
+                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">
                     Confirmation code
                   </label>
                   <input
@@ -378,12 +392,12 @@ export const RegisterPage = () => {
                 </button>
               </form>
 
-              <div className="flex items-center justify-between pt-1 border-t border-[#E8E8E8] text-sm">
+              <div className="flex items-center justify-between pt-1 border-t border-[#E8E8E8] dark:border-[#2E2A25] text-sm">
                 <button
                   type="button"
                   onClick={handleResendCode}
                   disabled={verificationLoading}
-                  className="text-[#E8612D] hover:underline flex items-center gap-1 font-semibold disabled:opacity-50 cursor-pointer"
+                  className="text-[#E8612D] dark:text-[#FF8A50] hover:underline flex items-center gap-1 font-semibold disabled:opacity-50 cursor-pointer"
                 >
                   <RotateCw className={`w-3.5 h-3.5 ${verificationLoading ? 'animate-spin' : ''}`} />
                   <span>Resend Code</span>
@@ -391,7 +405,7 @@ export const RegisterPage = () => {
 
                 <Link
                   to="/login"
-                  className="text-[#999] hover:text-[#1A1A1A] font-medium"
+                  className="text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] font-medium transition-colors"
                 >
                   Back to Sign In
                 </Link>

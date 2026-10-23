@@ -23,22 +23,22 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
   const isTeacher = location.pathname.startsWith('/teacher') || location.pathname.startsWith('/proctor');
   const isStudent = location.pathname.startsWith('/student');
 
-  // Teacher navigation
+  // Teacher navigation with lively distinct colors
   const teacherNav = [
-    { name: 'Dashboard', path: '/teacher', icon: LayoutDashboard, exact: true },
-    { name: 'My Exams', path: '/teacher/exams', icon: FileText },
-    { name: 'Create Exam', path: '/teacher/create-exam', icon: PlusCircle },
-    { name: 'Student Results', path: '/teacher/results', icon: BarChart3 },
-    { name: 'Proctoring Reports', path: '/teacher/reports', icon: ShieldAlert },
-    { name: 'Profile', path: '/teacher/profile', icon: User },
+    { name: 'Dashboard', path: '/teacher', icon: LayoutDashboard, exact: true, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10 dark:bg-amber-500/20' },
+    { name: 'My Exams', path: '/teacher/exams', icon: FileText, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10 dark:bg-orange-500/20' },
+    { name: 'Create Exam', path: '/teacher/create-exam', icon: PlusCircle, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10 dark:bg-emerald-500/20' },
+    { name: 'Student Results', path: '/teacher/results', icon: BarChart3, color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-500/10 dark:bg-sky-500/20' },
+    { name: 'Proctoring Reports', path: '/teacher/reports', icon: ShieldAlert, color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-500/10 dark:bg-rose-500/20' },
+    { name: 'Profile', path: '/teacher/profile', icon: User, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10 dark:bg-purple-500/20' },
   ];
 
-  // Student navigation
+  // Student navigation with lively distinct colors
   const studentNav = [
-    { name: 'Dashboard', path: '/student', icon: LayoutDashboard, exact: true },
-    { name: 'My Exams', path: '/student/available', icon: BookOpen },
-    { name: 'Results', path: '/student/results', icon: Award },
-    { name: 'Profile', path: '/student/profile', icon: User },
+    { name: 'Dashboard', path: '/student', icon: LayoutDashboard, exact: true, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10 dark:bg-amber-500/20' },
+    { name: 'My Exams', path: '/student/available', icon: BookOpen, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10 dark:bg-orange-500/20' },
+    { name: 'Results', path: '/student/results', icon: Award, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10 dark:bg-emerald-500/20' },
+    { name: 'Profile', path: '/student/profile', icon: User, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10 dark:bg-purple-500/20' },
   ];
 
   const currentNav = isTeacher ? teacherNav : isStudent ? studentNav : null;
@@ -69,8 +69,8 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
         <div className="flex flex-col h-full justify-between p-3">
           <div className="space-y-1">
             {/* Workspace label */}
-            <div className="flex items-center gap-2.5 px-3 py-2.5 mb-2">
-              <div className="h-8 w-8 rounded-lg bg-[#F5F5F5] dark:bg-[#262320] text-[#E8612D] flex items-center justify-center">
+            <div className="flex items-center gap-2.5 px-3 py-2.5 mb-2 rounded-xl bg-[#F5F5F5]/60 dark:bg-[#262320]/60 border border-[#E8E8E8] dark:border-[#332F2B]">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center shadow-xs">
                 {isTeacher ? <Briefcase className="w-4 h-4" /> : <GraduationCap className="w-4 h-4" />}
               </div>
               <div>
@@ -84,7 +84,7 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
             </div>
 
             {/* Navigation links */}
-            <nav className="space-y-0.5">
+            <nav className="space-y-1">
               {currentNav.map((item) => {
                 const Icon = item.icon;
                 const isActive = item.exact
@@ -96,14 +96,25 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
+                    className={`group flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all ${
                       isActive
-                        ? 'bg-[#FFF4F0] dark:bg-[#2A1A14] text-[#E8612D] font-semibold'
+                        ? 'bg-gradient-to-r from-[#FFF4F0] to-[#FAF7F2] dark:from-[#2A1A14] dark:to-[#221B17] text-[#E8612D] dark:text-[#F06E3B] font-semibold border-l-2 border-[#E8612D] dark:border-[#F06E3B] shadow-xs'
                         : 'text-[#555] dark:text-[#C4BCB5] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320]'
                     }`}
                   >
-                    <Icon className="w-[18px] h-[18px]" />
-                    <span>{item.name}</span>
+                    <div
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+                        isActive
+                          ? 'bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white shadow-sm shadow-orange-500/30'
+                          : `${item.bg} ${item.color} group-hover:scale-110`
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className="flex-1">{item.name}</span>
+                    {isActive && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#E8612D] dark:bg-[#F06E3B]" />
+                    )}
                   </NavLink>
                 );
               })}
@@ -113,7 +124,7 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
           {/* User footer */}
           <div className="border-t border-[#E8E8E8] dark:border-[#332F2B] pt-3 space-y-2">
             <div className="flex items-center gap-2.5 px-3 py-1.5">
-              <div className="h-8 w-8 rounded-lg bg-[#E8612D] text-white flex items-center justify-center font-semibold text-xs shadow-xs">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center font-semibold text-xs shadow-xs">
                 {(user?.name || 'U').charAt(0).toUpperCase()}
               </div>
               <div className="overflow-hidden flex-1">

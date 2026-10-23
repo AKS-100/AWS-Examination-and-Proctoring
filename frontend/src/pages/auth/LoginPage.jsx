@@ -251,49 +251,61 @@ export const LoginPage = () => {
 
         {/* Page Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#E8612D] text-white mx-auto">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white mx-auto shadow-lg shadow-orange-500/25 ring-4 ring-orange-500/10 transition-transform hover:scale-105">
             <ShieldCheck className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+          <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight">
             Welcome back
           </h1>
-          <p className="text-sm text-[#999]">
+          <p className="text-sm text-[#999] dark:text-[#8C827A]">
             Sign in to your account to continue.
           </p>
         </div>
 
         {/* Main Card */}
-        <div className="card-clay p-6 sm:p-8 space-y-5">
+        <div className="card-clay p-6 sm:p-8 space-y-5 bg-white dark:bg-[#1C1A18] border border-[#E8E8E8] dark:border-[#332F2B]">
 
           {/* Role Selector */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-[#999] block">
+            <label className="text-xs font-semibold text-[#999] dark:text-[#8C827A] block">
               I am a
             </label>
-            <div className="grid grid-cols-2 p-1 bg-[#F5F5F5] rounded-lg border border-[#E8E8E8]">
+            <div className="grid grid-cols-2 p-1.5 bg-[#F5F5F5] dark:bg-[#221F1C] rounded-xl border border-[#E8E8E8] dark:border-[#332F2B]">
               <button
                 type="button"
                 onClick={() => handleRoleChange('student')}
-                className={`py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
                   !isTeacher
-                    ? 'bg-white text-[#1A1A1A] shadow-sm'
-                    : 'text-[#999] hover:text-[#555]'
+                    ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm dark:shadow-md border border-black/5 dark:border-white/10'
+                    : 'text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
                 }`}
               >
-                <GraduationCap className="w-4 h-4" />
+                <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+                  !isTeacher
+                    ? 'bg-orange-500/15 text-[#E8612D] dark:text-[#F06E3B]'
+                    : 'bg-black/5 dark:bg-white/5 text-[#999] dark:text-[#8C827A]'
+                }`}>
+                  <GraduationCap className="w-3.5 h-3.5" />
+                </div>
                 <span>Student</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleRoleChange('teacher')}
-                className={`py-2 px-3 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
                   isTeacher
-                    ? 'bg-white text-[#1A1A1A] shadow-sm'
-                    : 'text-[#999] hover:text-[#555]'
+                    ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm dark:shadow-md border border-black/5 dark:border-white/10'
+                    : 'text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
                 }`}
               >
-                <Briefcase className="w-4 h-4" />
+                <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
+                  isTeacher
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                    : 'bg-black/5 dark:bg-white/5 text-[#999] dark:text-[#8C827A]'
+                }`}>
+                  <Briefcase className="w-3.5 h-3.5" />
+                </div>
                 <span>Teacher</span>
               </button>
             </div>
@@ -301,8 +313,8 @@ export const LoginPage = () => {
 
           {/* Error Alert */}
           {formError && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />
               <div className="flex-1">
                 <span>{formError}</span>
                 {formError.includes('unconfirmed') && (
@@ -312,7 +324,7 @@ export const LoginPage = () => {
                       setConfirmEmail(email);
                       setShowConfirmModal(true);
                     }}
-                    className="block mt-1 font-semibold text-[#E8612D] underline underline-offset-2 hover:text-[#D4551F] text-xs"
+                    className="block mt-1 font-semibold text-[#E8612D] dark:text-[#F06E3B] underline underline-offset-2 hover:opacity-80 text-xs"
                   >
                     Enter confirmation code
                   </button>
@@ -323,8 +335,8 @@ export const LoginPage = () => {
 
           {/* Success Alert */}
           {formSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
               <span>{formSuccess}</span>
             </div>
           )}
@@ -333,17 +345,19 @@ export const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-[#1A1A1A] block">
+              <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">
                 Email
               </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="relative group">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 text-[#999] dark:text-[#8C827A] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#F06E3B] group-focus-within:bg-orange-500/10 transition-colors pointer-events-none">
+                  <Mail className="w-4 h-4" />
+                </div>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={isTeacher ? 'teacher@university.edu' : 'student@university.edu'}
-                  className="input-warm-pill py-2.5 text-sm w-full"
+                  className="input-warm-pill pl-11 py-2.5 text-sm w-full dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                   required
                   autoComplete="email"
                 />
@@ -353,7 +367,7 @@ export const LoginPage = () => {
             {/* Password */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-[#1A1A1A]">
+                <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2]">
                   Password
                 </label>
                 <button
@@ -365,26 +379,28 @@ export const LoginPage = () => {
                     setForgotMsg('');
                     setShowForgotModal(true);
                   }}
-                  className="text-xs text-[#E8612D] hover:text-[#D4551F] font-medium cursor-pointer"
+                  className="text-xs text-[#E8612D] dark:text-[#F06E3B] hover:underline font-semibold cursor-pointer"
                 >
                   Forgot password?
                 </button>
               </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#999] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="relative group">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 text-[#999] dark:text-[#8C827A] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#F06E3B] group-focus-within:bg-orange-500/10 transition-colors pointer-events-none">
+                  <Lock className="w-4 h-4" />
+                </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="input-warm-pill pl-11 pr-11 py-2.5 text-sm w-full"
+                  className="input-warm-pill pl-11 pr-11 py-2.5 text-sm w-full dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                   required
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#555] cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -396,7 +412,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={isSubmitting || isLoading}
-              className="btn-terracotta w-full py-2.5 text-sm flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              className="btn-terracotta w-full py-2.5 text-sm flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -413,11 +429,11 @@ export const LoginPage = () => {
           </form>
 
           {/* Link to Registration */}
-          <div className="text-center text-sm text-[#999] pt-1">
+          <div className="text-center text-sm text-[#999] dark:text-[#8C827A] pt-1">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-[#E8612D] hover:text-[#D4551F] font-semibold"
+              className="text-[#E8612D] dark:text-[#F06E3B] hover:underline font-semibold"
             >
               Sign up
             </Link>
@@ -428,18 +444,18 @@ export const LoginPage = () => {
 
       {/* Account Email Confirmation Modal */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-          <div className="card-clay rounded-2xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-150">
+          <div className="card-clay rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 bg-white dark:bg-[#1C1A18] border border-[#E8E8E8] dark:border-[#332F2B] shadow-2xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#FFF4F0] text-[#E8612D] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center shadow-md shadow-orange-500/20">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">
+                  <h3 className="text-base font-bold text-[#1A1A1A] dark:text-[#FAF7F2]">
                     Verify Email
                   </h3>
-                  <p className="text-xs text-[#999]">
+                  <p className="text-xs text-[#999] dark:text-[#8C827A]">
                     Enter the code sent to your email
                   </p>
                 </div>
@@ -447,48 +463,48 @@ export const LoginPage = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmModal(false)}
-                className="p-1.5 rounded-lg text-[#999] hover:text-[#1A1A1A] hover:bg-[#F5F5F5]"
+                className="p-2 rounded-xl text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {confirmMsg && (
-              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
                 <span>{confirmMsg}</span>
               </div>
             )}
 
             {confirmError && (
-              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
                 <span>{confirmError}</span>
               </div>
             )}
 
-            <form onSubmit={handleConfirmAccount} className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-[#1A1A1A]">Email</label>
+            <form onSubmit={handleConfirmAccount} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">Email</label>
                 <input
                   type="email"
                   value={confirmEmail}
                   onChange={(e) => setConfirmEmail(e.target.value)}
                   placeholder="name@university.edu"
-                  className="input-warm-pill w-full px-4 py-2.5 text-sm"
+                  className="input-warm-pill w-full px-4 py-2.5 text-sm dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                   required
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-[#1A1A1A]">Confirmation code</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">Confirmation code</label>
                 <input
                   type="text"
                   value={confirmCode}
                   onChange={(e) => setConfirmCode(e.target.value)}
                   placeholder="123456"
                   maxLength={6}
-                  className="input-warm-pill w-full px-4 py-2.5 text-sm font-mono tracking-widest text-center"
+                  className="input-warm-pill w-full px-4 py-2.5 text-sm font-mono tracking-widest text-center dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                   required
                 />
               </div>
@@ -498,7 +514,7 @@ export const LoginPage = () => {
                   type="button"
                   onClick={handleResendConfirmCode}
                   disabled={confirmLoading}
-                  className="text-xs text-[#E8612D] hover:underline flex items-center gap-1 font-semibold disabled:opacity-50"
+                  className="text-xs text-[#E8612D] dark:text-[#F06E3B] hover:underline flex items-center gap-1.5 font-semibold disabled:opacity-50"
                 >
                   <RotateCw className={`w-3.5 h-3.5 ${confirmLoading ? 'animate-spin' : ''}`} />
                   <span>Resend Code</span>
@@ -507,7 +523,7 @@ export const LoginPage = () => {
                 <button
                   type="submit"
                   disabled={confirmLoading}
-                  className="btn-terracotta text-sm py-2 px-4 disabled:opacity-50"
+                  className="btn-terracotta text-sm py-2 px-5 shadow-sm shadow-orange-500/20 disabled:opacity-50"
                 >
                   {confirmLoading ? 'Verifying...' : 'Confirm'}
                 </button>
@@ -519,18 +535,18 @@ export const LoginPage = () => {
 
       {/* Forgot Password Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-          <div className="card-clay rounded-2xl max-w-md w-full p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-150">
+          <div className="card-clay rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 bg-white dark:bg-[#1C1A18] border border-[#E8E8E8] dark:border-[#332F2B] shadow-2xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#FFF4F0] text-[#E8612D] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center shadow-md shadow-orange-500/20">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">
+                  <h3 className="text-base font-bold text-[#1A1A1A] dark:text-[#FAF7F2]">
                     Reset Password
                   </h3>
-                  <p className="text-xs text-[#999]">
+                  <p className="text-xs text-[#999] dark:text-[#8C827A]">
                     Step {forgotStep} of 2
                   </p>
                 </div>
@@ -538,56 +554,56 @@ export const LoginPage = () => {
               <button
                 type="button"
                 onClick={() => setShowForgotModal(false)}
-                className="p-1.5 rounded-lg text-[#999] hover:text-[#1A1A1A] hover:bg-[#F5F5F5]"
+                className="p-2 rounded-xl text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {forgotMsg && (
-              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
                 <span>{forgotMsg}</span>
               </div>
             )}
 
             {forgotError && (
-              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
                 <span>{forgotError}</span>
               </div>
             )}
 
             {forgotStep === 1 ? (
-              <form onSubmit={handleRequestPasswordReset} className="space-y-3">
-                <p className="text-sm text-[#555]">
+              <form onSubmit={handleRequestPasswordReset} className="space-y-4">
+                <p className="text-sm text-[#555] dark:text-[#C4BCB5]">
                   Enter your email to receive a password reset code.
                 </p>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-[#1A1A1A]">Email</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">Email</label>
                   <input
                     type="email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="name@university.edu"
-                    className="input-warm-pill w-full px-4 py-2.5 text-sm"
+                    className="input-warm-pill w-full px-4 py-2.5 text-sm dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                     required
                   />
                 </div>
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex justify-end gap-2.5 pt-1">
                   <button
                     type="button"
                     onClick={() => setShowForgotModal(false)}
-                    className="btn-warm-secondary text-sm py-2 px-3.5"
+                    className="btn-warm-secondary text-sm py-2 px-4 dark:border-[#332F2B]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    className="btn-terracotta text-sm py-2 px-4 flex items-center gap-1.5 disabled:opacity-50"
+                    className="btn-terracotta text-sm py-2 px-5 flex items-center gap-1.5 shadow-sm shadow-orange-500/20 disabled:opacity-50"
                   >
                     <span>{forgotLoading ? 'Sending...' : 'Send Code'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -595,44 +611,44 @@ export const LoginPage = () => {
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleConfirmPasswordReset} className="space-y-3">
-                <p className="text-sm text-[#555]">
-                  Enter the code sent to <strong className="text-[#1A1A1A]">{forgotEmail}</strong> and your new password.
+              <form onSubmit={handleConfirmPasswordReset} className="space-y-4">
+                <p className="text-sm text-[#555] dark:text-[#C4BCB5]">
+                  Enter the code sent to <strong className="text-[#1A1A1A] dark:text-[#FAF7F2]">{forgotEmail}</strong> and your new password.
                 </p>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-[#1A1A1A]">6-digit code</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">6-digit code</label>
                   <input
                     type="text"
                     value={forgotCode}
                     onChange={(e) => setForgotCode(e.target.value)}
                     placeholder="123456"
                     maxLength={6}
-                    className="input-warm-pill w-full px-4 py-2.5 text-sm font-mono tracking-widest text-center"
+                    className="input-warm-pill w-full px-4 py-2.5 text-sm font-mono tracking-widest text-center dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                     required
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-[#1A1A1A]">New password</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">New password</label>
                   <input
                     type="password"
                     value={forgotNewPassword}
                     onChange={(e) => setForgotNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="input-warm-pill w-full px-4 py-2.5 text-sm"
+                    className="input-warm-pill w-full px-4 py-2.5 text-sm dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                     required
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-[#1A1A1A]">Confirm password</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] block">Confirm password</label>
                   <input
                     type="password"
                     value={forgotConfirmPassword}
                     onChange={(e) => setForgotConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="input-warm-pill w-full px-4 py-2.5 text-sm"
+                    className="input-warm-pill w-full px-4 py-2.5 text-sm dark:bg-[#221F1C] dark:border-[#332F2B] dark:text-[#FAF7F2]"
                     required
                   />
                 </div>
@@ -641,14 +657,14 @@ export const LoginPage = () => {
                   <button
                     type="button"
                     onClick={() => setForgotStep(1)}
-                    className="text-sm font-medium text-[#999] hover:text-[#1A1A1A]"
+                    className="text-xs font-semibold text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    className="btn-terracotta text-sm py-2 px-4 disabled:opacity-50"
+                    className="btn-terracotta text-sm py-2 px-5 shadow-sm shadow-orange-500/20 disabled:opacity-50"
                   >
                     {forgotLoading ? 'Updating...' : 'Set Password'}
                   </button>
