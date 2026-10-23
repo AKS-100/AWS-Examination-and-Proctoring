@@ -6,8 +6,8 @@ import {
 } from 'amazon-cognito-identity-js';
 
 const poolData = {
-  UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID || 'ap-south-1_zSvNBA2w9',
-  ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID || '1oqqmtfarh9pojfgfupblu803h',
+  UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID || 'ap-south-1_cu6lzvd5M',
+  ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID || '7d25hpuqb2cgv0fc3jljv3s9s5',
 };
 
 export const userPool = new CognitoUserPool(poolData);

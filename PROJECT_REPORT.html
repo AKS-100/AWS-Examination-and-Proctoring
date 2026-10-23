@@ -348,7 +348,7 @@
   <h1>8. SYSTEM ARCHITECTURE AND MODULES</h1>
 
   <h3>8.1 Module 1: Authentication & Role-Based Access Control (Cognito & JWT)</h3>
-  <p>Identity lifecycle management is powered by Amazon Cognito User Pools (`ap-south-1_zSvNBA2w9`). The system issues signed JSON Web Tokens (JWT) enforcing cryptographic role-based authorization across two distinct user profiles: <b>Student</b> (examination taking, face registration, arena access) and <b>Teacher</b> (exam authoring, roster management, live proctoring HUD, timeline inspection).</p>
+  <p>Identity lifecycle management is powered by Amazon Cognito User Pools (`ap-south-1_cu6lzvd5M`). The system issues signed JSON Web Tokens (JWT) enforcing cryptographic role-based authorization across two distinct user profiles: <b>Student</b> (examination taking, face registration, arena access) and <b>Teacher</b> (exam authoring, roster management, live proctoring HUD, timeline inspection).</p>
 
   <h3>8.2 Module 2: Candidate Enrollment & Biometric Identity Verification</h3>
   <p>Candidates establish a baseline biometric identity photo upon initial onboarding. The reference image is stored securely in Amazon S3 (`baselines/{studentId}/reference.jpg`) and indexed into the Amazon Rekognition collection `proctorai-faces`. At exam launch, a live webcam frame is compared against the stored baseline using `CompareFaces`. Only verified candidates (> 80% biometric match) are permitted entry.</p>

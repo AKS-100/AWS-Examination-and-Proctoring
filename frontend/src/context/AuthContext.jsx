@@ -14,6 +14,7 @@ import {
   apiRegister,
   apiValidateCognitoSession,
   apiExchangeCognitoCode,
+  apiCognitoConfirm,
 } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -290,6 +291,16 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const res = await confirmSignUpCognito({ email, code });
+      if (res.success) {
+        // Also sync confirmation to backend to guarantee Cognito Group assignment
+        try {
+          await apiCognitoConfirm({ email, code });
+        } catch (syncErr) {
+          if (import.meta.env.DEV) {
+            console.info('[Cognito group sync notice]:', syncErr.message);
+          }
+        }
+      }
       return res;
     } catch (err) {
       return { success: false, error: err.message };

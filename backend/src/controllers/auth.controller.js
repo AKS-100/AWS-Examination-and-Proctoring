@@ -137,6 +137,8 @@ export const login = async (req, res, next) => {
         email,
         password,
       });
+      // Ensure user is enrolled in their correct Cognito Group (Students or Teachers)
+      await cognitoService.addUserToCognitoGroup({ email: user.email, role: user.role });
     } catch (cogErr) {
       console.warn('[AWS Cognito Auth Notice]:', cogErr.message);
     }
@@ -331,7 +333,9 @@ export const exchangeCognitoCode = async (req, res, next) => {
       });
     }
 
-    const tokenUrl = 'https://ap-south-1zsvnba2w9.auth.ap-south-1.amazoncognito.com/oauth2/token';
+    const poolId = awsConfig.cognitoUserPoolId || 'ap-south-1_cu6lzvd5M';
+    const domainPrefix = poolId.toLowerCase().replace('_', '');
+    const tokenUrl = `https://${domainPrefix}.auth.${awsConfig.region || 'ap-south-1'}.amazoncognito.com/oauth2/token`;
     const params = new URLSearchParams({
       grant_type: 'authorization_code',
       client_id: awsConfig.cognitoClientId,
@@ -478,6 +482,13 @@ export const cognitoSessionValidationHandler = async (req, res) => {
         actualRole: user.role,
       },
     });
+  }
+
+  // Ensure user is enrolled in their correct Cognito Group
+  try {
+    await cognitoService.addUserToCognitoGroup({ email: user.email, role: user.role });
+  } catch (grpErr) {
+    // Non-blocking
   }
 
   return res.status(200).json({

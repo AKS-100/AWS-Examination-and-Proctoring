@@ -5,6 +5,7 @@ import {
   AdminInitiateAuthCommand,
   ConfirmSignUpCommand,
   ResendConfirmationCodeCommand,
+  AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { cognitoClient, awsConfig, isAwsConfigured } from '../../config/aws.config.js';
 
@@ -12,6 +13,30 @@ import { cognitoClient, awsConfig, isAwsConfigured } from '../../config/aws.conf
  * Amazon Cognito Service (Free Tier: 50,000 MAUs free forever)
  * Handles enterprise-grade candidate & instructor identity management.
  */
+
+/**
+ * Add a user to their corresponding Cognito Group (Students or Teachers)
+ */
+export const addUserToCognitoGroup = async ({ email, role = 'student' }) => {
+  if (isAwsConfigured() && cognitoClient && awsConfig.cognitoUserPoolId) {
+    try {
+      const normalizedRole = (role || '').toLowerCase();
+      const groupName = (normalizedRole === 'teacher' || normalizedRole === 'proctor') ? 'Teachers' : 'Students';
+      const command = new AdminAddUserToGroupCommand({
+        UserPoolId: awsConfig.cognitoUserPoolId,
+        Username: email.trim().toLowerCase(),
+        GroupName: groupName,
+      });
+      await cognitoClient.send(command);
+      console.log(`[AWS Cognito]: Successfully assigned ${email} to group "${groupName}" in pool ${awsConfig.cognitoUserPoolId}`);
+      return { success: true, groupName };
+    } catch (err) {
+      console.warn(`[AWS Cognito AdminAddUserToGroup Notice]:`, err.message);
+      return { success: false, error: err.message };
+    }
+  }
+  return { success: false, error: 'Cognito not configured' };
+};
 
 /**
  * Register candidate or instructor in Cognito User Pool
@@ -28,6 +53,8 @@ export const registerWithCognito = async ({ email, password, name, role = 'stude
         ],
       });
       const response = await cognitoClient.send(command);
+      // Automatically associate candidate/proctor with their respective Cognito group
+      await addUserToCognitoGroup({ email, role });
       return {
         success: true,
         mode: 'live',
@@ -37,6 +64,7 @@ export const registerWithCognito = async ({ email, password, name, role = 'stude
     } catch (err) {
       console.warn('[AWS Cognito SignUp Notice]:', err.message);
       if (err.name === 'UsernameExistsException') {
+        await addUserToCognitoGroup({ email, role });
         return {
           success: true,
           mode: 'live',
@@ -119,7 +147,7 @@ export const authenticateWithCognito = async ({ email, password }) => {
 /**
  * Confirm user signup with 6-digit confirmation code sent to their email
  */
-export const confirmCognitoUser = async ({ email, code }) => {
+export const confirmCognitoUser = async ({ email, code, role = 'student' }) => {
   if (cognitoClient && awsConfig.cognitoClientId) {
     try {
       const command = new ConfirmSignUpCommand({
@@ -128,6 +156,7 @@ export const confirmCognitoUser = async ({ email, code }) => {
         ConfirmationCode: code.trim(),
       });
       await cognitoClient.send(command);
+      await addUserToCognitoGroup({ email, role });
       return { success: true, message: 'Account successfully confirmed in AWS Cognito!' };
     } catch (err) {
       console.warn('[AWS Cognito Confirm Error]:', err.message);
@@ -162,6 +191,7 @@ export const resendCognitoCode = async ({ email }) => {
 };
 
 export default {
+  addUserToCognitoGroup,
   registerWithCognito,
   authenticateWithCognito,
   confirmCognitoUser,

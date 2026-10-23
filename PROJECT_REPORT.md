@@ -205,7 +205,7 @@ A critical evaluation of existing academic models and commercial platforms revea
 ```
 
 ### 8.1 Module 1: Authentication & Role-Based Access Control
-- Implemented using **Amazon Cognito User Pools** (`ap-south-1_zSvNBA2w9`) with JWT token exchange.
+- Implemented using **Amazon Cognito User Pools** (`ap-south-1_cu6lzvd5M`) with JWT token exchange.
 - Separates privileges into strict roles: **Student** (access to exam catalog, verification, and arena) and **Teacher/Educator** (access to exam authoring, candidate rosters, live risk monitoring, and timeline inspection).
 - Provides route protection guards and cryptographic token validation across all API endpoints.
 

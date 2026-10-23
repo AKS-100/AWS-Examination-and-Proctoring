@@ -4,61 +4,50 @@ import { env } from '../../config/env.js';
 /**
  * AWS Cognito JWT Verifier Service
  * Validates Cognito JWTs cryptographically using Cognito's public JWKS.
- * Checks signature, expiration, issuer (https://cognito-idp.{region}.amazonaws.com/{poolId}),
- * and client ID audience.
+ * Supports both active user pool (ap-south-1_cu6lzvd5M) and transitional Amplify pool (ap-south-1_zSvNBA2w9).
  */
 
-let verifier = null;
-let fallbackVerifier = null;
+const KNOWN_POOLS = [
+  {
+    userPoolId: 'ap-south-1_cu6lzvd5M',
+    clientId: '7d25hpuqb2cgv0fc3jljv3s9s5',
+    tokenUse: null,
+  },
+  {
+    userPoolId: 'ap-south-1_zSvNBA2w9',
+    clientId: '1oqqmtfarh9pojfgfupblu803h',
+    tokenUse: null,
+  },
+];
+
+let multiVerifier = null;
 
 export const getCognitoVerifier = () => {
-  if (!verifier && env.AWS_COGNITO_USER_POOL_ID && env.AWS_COGNITO_CLIENT_ID) {
-    verifier = CognitoJwtVerifier.create({
-      userPoolId: env.AWS_COGNITO_USER_POOL_ID,
-      tokenUse: null, // Verify both ID and Access tokens safely
-      clientId: env.AWS_COGNITO_CLIENT_ID,
-    });
+  if (!multiVerifier) {
+    const pools = [...KNOWN_POOLS];
+    if (env.AWS_COGNITO_USER_POOL_ID && env.AWS_COGNITO_CLIENT_ID) {
+      if (!pools.some((p) => p.userPoolId === env.AWS_COGNITO_USER_POOL_ID)) {
+        pools.unshift({
+          userPoolId: env.AWS_COGNITO_USER_POOL_ID,
+          clientId: env.AWS_COGNITO_CLIENT_ID,
+          tokenUse: null,
+        });
+      }
+    }
+    multiVerifier = CognitoJwtVerifier.create(pools);
   }
-  return verifier;
-};
-
-export const getFallbackVerifier = () => {
-  if (!fallbackVerifier) {
-    fallbackVerifier = CognitoJwtVerifier.create({
-      userPoolId: 'ap-south-1_zSvNBA2w9',
-      tokenUse: null,
-      clientId: '1oqqmtfarh9pojfgfupblu803h',
-    });
-  }
-  return fallbackVerifier;
+  return multiVerifier;
 };
 
 /**
  * Verifies a Cognito token and returns decoded verified claims.
- * Gracefully verifies against the active configured pool or institutional pool fallback.
  */
 export const verifyCognitoToken = async (token) => {
-  const v = getCognitoVerifier();
-  if (v) {
-    try {
-      return await v.verify(token);
-    } catch (primaryErr) {
-      // If primary pool throws due to issuer/pool mismatch, try institutional fallback pool
-      const fb = getFallbackVerifier();
-      try {
-        return await fb.verify(token);
-      } catch (fallbackErr) {
-        throw primaryErr;
-      }
-    }
-  }
-
-  const fb = getFallbackVerifier();
-  return await fb.verify(token);
+  const verifier = getCognitoVerifier();
+  return await verifier.verify(token);
 };
 
 export default {
   getCognitoVerifier,
-  getFallbackVerifier,
   verifyCognitoToken,
 };

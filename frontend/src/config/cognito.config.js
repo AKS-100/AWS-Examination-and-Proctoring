@@ -1,14 +1,13 @@
 /**
  * AWS Cognito OIDC Configuration for react-oidc-context & oidc-client-ts
- * User Pool: ap-south-1_zSvNBA2w9
- * App Client: 1oqqmtfarh9pojfgfupblu803h (adaptive-exam-proctoring)
- * Domain: https://ap-south-1zsvnba2w9.auth.ap-south-1.amazoncognito.com
+ * User Pool: ap-south-1_cu6lzvd5M
+ * App Client: 7d25hpuqb2cgv0fc3jljv3s9s5 (adaptive-exam-users)
  */
 
-export const COGNITO_CLIENT_ID = '1oqqmtfarh9pojfgfupblu803h';
-export const COGNITO_USER_POOL_ID = 'ap-south-1_zSvNBA2w9';
+export const COGNITO_CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID || '7d25hpuqb2cgv0fc3jljv3s9s5';
+export const COGNITO_USER_POOL_ID = import.meta.env.VITE_COGNITO_USER_POOL_ID || 'ap-south-1_cu6lzvd5M';
 export const COGNITO_REGION = 'ap-south-1';
-export const COGNITO_DOMAIN = 'https://ap-south-1zsvnba2w9.auth.ap-south-1.amazoncognito.com';
+export const COGNITO_DOMAIN = `https://${COGNITO_USER_POOL_ID.toLowerCase().replace('_', '')}.auth.${COGNITO_REGION}.amazoncognito.com`;
 
 export const cognitoAuthConfig = {
   authority: `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`,

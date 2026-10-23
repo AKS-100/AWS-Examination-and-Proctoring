@@ -262,7 +262,7 @@ export const cognitoAuthHandler = async (req, res, next) => {
  */
 export const cognitoConfirmHandler = async (req, res, next) => {
   try {
-    const { email, code } = req.body;
+    const { email, code, role } = req.body;
     if (!email || !code) {
       return res.status(400).json({
         success: false,
@@ -270,7 +270,7 @@ export const cognitoConfirmHandler = async (req, res, next) => {
       });
     }
 
-    const result = await cognito.confirmCognitoUser({ email, code });
+    const result = await cognito.confirmCognitoUser({ email, code, role: role || 'student' });
     if (!result.success) {
       return res.status(400).json({
         success: false,
