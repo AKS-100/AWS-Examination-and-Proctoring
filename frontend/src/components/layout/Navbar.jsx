@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import {
-  ShieldCheck,
   Search,
   Bell,
   Menu,
@@ -11,6 +10,7 @@ import {
   LogOut,
   Sun,
   Moon,
+  Command,
 } from 'lucide-react';
 
 export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSidebarOpen }) => {
@@ -30,58 +30,61 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white dark:bg-[#1C1A18] border-b border-[#E8E8E8] dark:border-[#332F2B] px-4 sm:px-6 lg:px-8 py-2.5 transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/85 dark:bg-[#09090b]/85 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 px-4 sm:px-6 lg:px-8 py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-        {/* Left: Brand & Mobile Sidebar Toggle */}
+        {/* Left: Brand Wordmark (No icon, clean typography inspired by reference) */}
         <div className="flex items-center gap-3">
           {(isTeacher || isStudent) && !isAuthPage && (
             <button
               type="button"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-lg text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320] lg:hidden focus:outline-none transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-xl text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/80 lg:hidden focus:outline-none transition-colors"
               aria-label="Toggle navigation sidebar"
             >
               {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           )}
 
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white transition-transform group-hover:scale-105 shadow-sm shadow-[#E8612D]/20">
-              <ShieldCheck className="h-4.5 w-4.5" />
-            </div>
-            <span className="font-bold text-[15px] text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight transition-colors">
-              Adaptive<span className="text-[#E8612D] dark:text-[#FF7A45]">Exam</span>
+          <Link to="/" className="flex items-center gap-1.5 group select-none">
+            <span className="font-extrabold text-xl tracking-tight text-zinc-900 dark:text-white transition-colors">
+              Adaptive<span className="font-normal text-zinc-400 dark:text-zinc-500 ml-0.5">Exam</span>
             </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900 dark:bg-zinc-100 opacity-60 self-baseline mt-3" />
           </Link>
         </div>
 
-        {/* Center: Search bar on dashboard pages */}
+        {/* Center: Search pill bar (Matches Reference Image with shortcut badge) */}
         {!isLandingPage && !isAuthPage && (
-          <div className="hidden md:flex flex-1 max-w-sm mx-4 relative items-center">
-            <Search className="w-4 h-4 text-[#999] dark:text-[#8C827A] absolute left-3 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search exams, students..."
-              className="w-full bg-[#F5F5F5] dark:bg-[#262320] border border-transparent dark:border-[#332F2B] rounded-lg pl-10 pr-4 py-2 text-sm text-[#1A1A1A] dark:text-[#FAF7F2] placeholder-[#999] dark:placeholder-[#8C827A] focus:outline-none focus:border-[#E8E8E8] dark:focus:border-[#47423D] focus:bg-white dark:focus:bg-[#1C1A18] transition-colors"
-              readOnly
+          <div className="hidden md:flex flex-1 max-w-md mx-4">
+            <button
+              type="button"
               onClick={() => {
                 if (isTeacher) navigate('/teacher/exams');
                 else if (isStudent) navigate('/student/available');
               }}
-            />
+              className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-full bg-zinc-100/80 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-900 transition-all cursor-pointer shadow-xs"
+            >
+              <div className="flex items-center gap-2.5">
+                <Search className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500" />
+                <span className="font-medium text-zinc-500 dark:text-zinc-400">Search examinations, candidates...</span>
+              </div>
+              <kbd className="inline-flex items-center gap-0.5 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-md bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 shadow-xs">
+                <Command className="w-2.5 h-2.5" />K
+              </kbd>
+            </button>
           </div>
         )}
 
         {/* Center: Public navigation links */}
         {(isLandingPage || isAuthPage) && (
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#555] dark:text-[#C4BCB5]">
-            <Link to="/" className="text-[#E8612D] hover:text-[#D4551F] transition-colors">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            <Link to="/" className="text-zinc-900 dark:text-white font-semibold transition-colors">
               Home
             </Link>
-            <a href="#features" className="hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] transition-colors">
+            <a href="#features" className="hover:text-zinc-900 dark:hover:text-white transition-colors">
               Features
             </a>
-            <a href="#about" className="hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] transition-colors">
+            <a href="#about" className="hover:text-zinc-900 dark:hover:text-white transition-colors">
               About
             </a>
           </nav>
@@ -93,14 +96,14 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           <button
             type="button"
             onClick={toggleTheme}
-            className="flex items-center justify-center h-9 w-9 rounded-lg text-[#555] dark:text-[#C4BCB5] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320] transition-colors"
+            className="flex items-center justify-center h-8 w-8 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
             aria-label="Toggle dark/light theme"
           >
             {isDark ? (
-              <Sun className="w-[18px] h-[18px] text-amber-400 animate-in spin-in-90 duration-200" />
+              <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Moon className="w-[18px] h-[18px] text-[#555] hover:text-[#1A1A1A] animate-in spin-in-90 duration-200" />
+              <Moon className="w-4 h-4 text-zinc-600 hover:text-zinc-900" />
             )}
           </button>
 
@@ -108,14 +111,14 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           {isAuthenticated && (
             <button
               type="button"
-              className="relative flex items-center justify-center h-9 w-9 rounded-lg text-[#555] dark:text-[#C4BCB5] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320] transition-colors"
+              className="relative flex items-center justify-center h-8 w-8 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title="Notifications"
               onClick={() => {
                 if (isTeacher) navigate('/teacher/reports');
               }}
             >
-              <Bell className="w-[18px] h-[18px]" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#10B981] ring-2 ring-white dark:ring-[#1C1A18]" />
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#09090b]" />
             </button>
           )}
 
@@ -125,7 +128,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
               onClick={onRefreshHealth}
               title="System Status"
               type="button"
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#555] dark:text-[#C4BCB5] hover:bg-[#F5F5F5] dark:hover:bg-[#262320] transition-colors"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100/70 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 transition-colors"
             >
               <span
                 className={`w-2 h-2 rounded-full ${
@@ -143,15 +146,15 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           {/* User controls */}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-[#F5F5F5] dark:bg-[#262320]">
-                <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white flex items-center justify-center font-semibold text-xs shadow-xs">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100/80 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800">
+                <div className="h-6 w-6 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center font-bold text-[11px] shadow-xs">
                   {(user.name || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-[#1A1A1A] dark:text-[#FAF7F2] leading-tight">
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
                     {user.name}
                   </span>
-                  <span className="text-[10px] text-[#999] dark:text-[#8C827A] capitalize leading-tight">
+                  <span className="text-[10px] text-zinc-500 dark:text-zinc-400 capitalize leading-tight">
                     {user.role}
                   </span>
                 </div>
@@ -160,7 +163,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex items-center justify-center h-9 w-9 rounded-lg text-[#999] hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                className="flex items-center justify-center h-8 w-8 rounded-full text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
@@ -170,13 +173,13 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-lg text-sm font-medium text-[#555] dark:text-[#C4BCB5] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] hover:bg-[#F5F5F5] dark:hover:bg-[#262320] transition-colors"
+                className="px-4 py-1.5 rounded-full text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="btn-terracotta text-sm py-2 px-4"
+                className="px-4 py-1.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs font-semibold shadow-xs transition-all"
               >
                 Get Started
               </Link>

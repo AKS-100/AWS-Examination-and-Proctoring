@@ -145,13 +145,13 @@ export const RegisterPage = () => {
 
         {/* Page Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FF7A45] to-[#E8612D] text-white mx-auto shadow-md shadow-[#E8612D]/20">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 mx-auto shadow-md transition-transform hover:scale-105 border border-zinc-700/40">
             <ShieldCheck className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
             {isVerificationStep ? 'Verify your email' : 'Create an account'}
           </h1>
-          <p className="text-sm text-[#888] dark:text-[#8C827A]">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {isVerificationStep
               ? `Enter the code sent to ${email}`
               : 'Get started with AdaptiveExam'}
@@ -159,28 +159,28 @@ export const RegisterPage = () => {
         </div>
 
         {/* Main Card */}
-        <div className="card-clay p-6 sm:p-8 space-y-5">
+        <div className="card-clay p-6 sm:p-8 space-y-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
 
           {!isVerificationStep ? (
             <>
               {/* Role Toggle */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#888] dark:text-[#8C827A] block">
+                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block">
                   I am registering as
                 </label>
-                <div className="grid grid-cols-2 p-1 bg-[#F0ECE1] dark:bg-[#161412] rounded-xl border border-[#E5E0D5] dark:border-[#2A2622] gap-1">
+                <div className="grid grid-cols-2 p-1 bg-zinc-100 dark:bg-zinc-850 rounded-xl border border-zinc-200 dark:border-zinc-800 gap-1">
                   <button
                     type="button"
                     onClick={() => setRole('student')}
                     className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'student'
-                        ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm border border-black/5 dark:border-white/10'
-                        : 'text-[#888] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
+                        ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
                     <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
                       role === 'student'
-                        ? 'bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50]'
+                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
                         : 'bg-transparent text-current'
                     }`}>
                       <GraduationCap className="w-4 h-4" />
@@ -193,13 +193,13 @@ export const RegisterPage = () => {
                     onClick={() => setRole('teacher')}
                     className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'teacher'
-                        ? 'bg-white dark:bg-[#2A2622] text-[#1A1A1A] dark:text-[#FAF7F2] shadow-sm border border-black/5 dark:border-white/10'
-                        : 'text-[#888] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2]'
+                        ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
                     <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
                       role === 'teacher'
-                        ? 'bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50]'
+                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
                         : 'bg-transparent text-current'
                     }`}>
                       <Briefcase className="w-4 h-4" />
@@ -228,9 +228,9 @@ export const RegisterPage = () => {
               {/* Form */}
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Full name</label>
+                  <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">Full name</label>
                   <div className="relative group">
-                    <User className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
+                    <User className="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type="text"
                       value={name}
@@ -243,9 +243,9 @@ export const RegisterPage = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Email</label>
+                  <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">Email</label>
                   <div className="relative group">
-                    <Mail className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
+                    <Mail className="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type="email"
                       value={email}
@@ -260,11 +260,11 @@ export const RegisterPage = () => {
 
                 {role === 'student' && (
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">
-                      Student ID <span className="text-[#999] dark:text-[#8C827A] font-normal">(optional)</span>
+                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">
+                      Student ID <span className="text-zinc-400 font-normal">(optional)</span>
                     </label>
                     <div className="relative group">
-                      <GraduationCap className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
+                      <GraduationCap className="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                       <input
                         type="text"
                         value={studentId}
@@ -277,9 +277,9 @@ export const RegisterPage = () => {
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Password</label>
+                  <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">Password</label>
                   <div className="relative group">
-                    <Lock className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
+                    <Lock className="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={password}
@@ -291,7 +291,7 @@ export const RegisterPage = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#999] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -300,9 +300,9 @@ export const RegisterPage = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">Confirm password</label>
+                  <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">Confirm password</label>
                   <div className="relative group">
-                    <Lock className="w-4 h-4 text-[#999] group-focus-within:text-[#E8612D] dark:group-focus-within:text-[#FF8A50] absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
+                    <Lock className="w-4 h-4 text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors pointer-events-none" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
@@ -321,7 +321,7 @@ export const RegisterPage = () => {
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <div className="w-4 h-4 rounded-full border-2 border-white dark:border-zinc-950 border-t-transparent animate-spin" />
                       <span>Creating account...</span>
                     </>
                   ) : (
@@ -330,11 +330,11 @@ export const RegisterPage = () => {
                 </button>
               </form>
 
-              <div className="text-center text-sm text-[#888] dark:text-[#8C827A] pt-1">
+              <div className="text-center text-sm text-zinc-500 dark:text-zinc-400 pt-1">
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="text-[#E8612D] dark:text-[#FF8A50] hover:text-[#D4551F] font-semibold transition-colors"
+                  className="text-zinc-900 dark:text-white hover:underline font-semibold transition-colors"
                 >
                   Sign in
                 </Link>
@@ -343,12 +343,12 @@ export const RegisterPage = () => {
           ) : (
             /* Verification Screen */
             <div className="space-y-4">
-              <div className="p-3.5 rounded-xl bg-[#F5F5F5] dark:bg-[#24211E] border border-[#E8E8E8] dark:border-[#2E2A25] text-[#1A1A1A] dark:text-[#FAF7F2] text-sm flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#FF7A45]/15 text-[#E8612D] dark:text-[#FF8A50] flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <span>
-                  A 6-digit code was sent to <strong className="text-[#1A1A1A] dark:text-white">{email}</strong>. Enter it below to activate your account.
+                  A 6-digit code was sent to <strong className="text-zinc-900 dark:text-white">{email}</strong>. Enter it below to activate your account.
                 </span>
               </div>
 
@@ -368,7 +368,7 @@ export const RegisterPage = () => {
 
               <form onSubmit={handleVerifySubmit} className="space-y-3">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-[#1A1A1A] dark:text-[#FAF7F2] block">
+                  <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100 block">
                     Confirmation code
                   </label>
                   <input
@@ -392,12 +392,12 @@ export const RegisterPage = () => {
                 </button>
               </form>
 
-              <div className="flex items-center justify-between pt-1 border-t border-[#E8E8E8] dark:border-[#2E2A25] text-sm">
+              <div className="flex items-center justify-between pt-1 border-t border-zinc-200 dark:border-zinc-800 text-sm">
                 <button
                   type="button"
                   onClick={handleResendCode}
                   disabled={verificationLoading}
-                  className="text-[#E8612D] dark:text-[#FF8A50] hover:underline flex items-center gap-1 font-semibold disabled:opacity-50 cursor-pointer"
+                  className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:underline flex items-center gap-1 font-semibold disabled:opacity-50 cursor-pointer"
                 >
                   <RotateCw className={`w-3.5 h-3.5 ${verificationLoading ? 'animate-spin' : ''}`} />
                   <span>Resend Code</span>
@@ -405,7 +405,7 @@ export const RegisterPage = () => {
 
                 <Link
                   to="/login"
-                  className="text-[#999] dark:text-[#8C827A] hover:text-[#1A1A1A] dark:hover:text-[#FAF7F2] font-medium transition-colors"
+                  className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white font-medium transition-colors"
                 >
                   Back to Sign In
                 </Link>

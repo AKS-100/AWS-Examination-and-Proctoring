@@ -5,34 +5,34 @@
 @layer base {
   :root {
     color-scheme: light;
-    --accent: #E8612D;
-    --accent-hover: #D4551F;
-    --accent-light: #FFF4F0;
-    --accent-border: #FFD9CC;
+    --accent: #18181b;
+    --accent-hover: #27272a;
+    --accent-light: #f4f4f5;
+    --accent-border: #e4e4e7;
     --bg-primary: #FAFAFA;
     --bg-card: #FFFFFF;
-    --bg-subtle: #F5F5F5;
-    --text-primary: #1A1A1A;
-    --text-secondary: #555555;
-    --text-muted: #999999;
-    --border: #E8E8E8;
-    --border-hover: #D0D0D0;
+    --bg-subtle: #F4F4F5;
+    --text-primary: #09090b;
+    --text-secondary: #52525b;
+    --text-muted: #71717a;
+    --border: #e4e4e7;
+    --border-hover: #d4d4d8;
   }
 
   .dark {
     color-scheme: dark;
-    --accent: #F06E3B;
-    --accent-hover: #FA804F;
-    --accent-light: #2A1A14;
-    --accent-border: #4A281E;
-    --bg-primary: #121110;
-    --bg-card: #1C1A18;
-    --bg-subtle: #262320;
-    --text-primary: #FAF7F2;
-    --text-secondary: #C4BCB5;
-    --text-muted: #8C827A;
-    --border: #332F2B;
-    --border-hover: #47423D;
+    --accent: #f4f4f5;
+    --accent-hover: #ffffff;
+    --accent-light: #27272a;
+    --accent-border: #3f3f46;
+    --bg-primary: #09090b;
+    --bg-card: #121215;
+    --bg-subtle: #18181b;
+    --text-primary: #f4f4f5;
+    --text-secondary: #d4d4d8;
+    --text-muted: #a1a1aa;
+    --border: #27272a;
+    --border-hover: #3f3f46;
   }
 
   body {
@@ -56,71 +56,86 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #D0D0D0;
+    background: #d4d4d8;
     border-radius: 9999px;
   }
 
   .dark ::-webkit-scrollbar-thumb {
-    background: #47423D;
+    background: #27272a;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #AAAAAA;
+    background: #a1a1aa;
   }
 
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: #5E5852;
+    background: #3f3f46;
   }
 }
 
-/* Clean elevated card */
+/* Luxury elevated cards */
 .card-clay {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
 .dark .card-clay {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
+  background-color: #121215;
+  border-color: #27272a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .card-clay:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .dark .card-clay:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25);
+  border-color: #3f3f46;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .card-clay-soft {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Primary accent button */
+/* Primary sleek pill button (High-contrast luxury style from reference image) */
 .btn-terracotta {
-  background-color: var(--accent);
+  background-color: #09090b;
   color: #FFFFFF;
   font-weight: 600;
-  border-radius: 10px;
-  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  padding: 0.65rem 1.4rem;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   letter-spacing: -0.01em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .btn-terracotta {
+  background-color: #f4f4f5;
+  color: #09090b;
 }
 
 .btn-terracotta:hover:not(:disabled) {
-  background-color: var(--accent-hover);
+  background-color: #27272a;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(232, 97, 45, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .btn-terracotta:hover:not(:disabled) {
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.18);
 }
 
 .btn-terracotta:active:not(:disabled) {
@@ -132,20 +147,26 @@
   cursor: not-allowed;
 }
 
-/* Secondary / outline button */
+/* Secondary outline button */
 .btn-warm-secondary {
   background-color: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border);
   font-weight: 600;
-  border-radius: 10px;
-  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  padding: 0.6rem 1.3rem;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+}
+
+.dark .btn-warm-secondary {
+  background-color: #18181b;
+  border-color: #27272a;
+  color: #f4f4f5;
 }
 
 .btn-warm-secondary:hover:not(:disabled) {
@@ -154,16 +175,27 @@
   transform: translateY(-1px);
 }
 
-/* Clean input field */
+.dark .btn-warm-secondary:hover:not(:disabled) {
+  background-color: #27272a;
+  border-color: #3f3f46;
+}
+
+/* Clean pill input */
 .input-warm-pill {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.65rem 1rem 0.65rem 2.75rem;
+  border-radius: 9999px;
+  padding: 0.65rem 1.15rem 0.65rem 2.75rem;
   font-size: 0.875rem;
   color: var(--text-primary);
   transition: all 0.15s ease;
   width: 100%;
+}
+
+.dark .input-warm-pill {
+  background-color: #121215;
+  border-color: #27272a;
+  color: #f4f4f5;
 }
 
 .input-warm-pill::placeholder {
@@ -172,127 +204,91 @@
 
 .input-warm-pill:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(232, 97, 45, 0.12);
+  border-color: #52525b;
+  box-shadow: 0 0 0 3px rgba(82, 82, 91, 0.15);
+}
+
+.dark .input-warm-pill:focus {
+  border-color: #71717a;
+  box-shadow: 0 0 0 3px rgba(161, 161, 170, 0.12);
 }
 
 /* =========================================================================
-   Dark Theme Architectural Overrides for Terracotta & Warm Sand Elements
+   Universal High-Contrast Dark Mode Overrides (Guarantees Total Readability)
    ========================================================================= */
 
 .dark .text-\[\#2D2A26\] {
-  color: #FAF7F2 !important;
+  color: #f4f4f5 !important;
 }
 
 .dark .text-\[\#1A1A1A\] {
-  color: #FAF7F2 !important;
+  color: #f4f4f5 !important;
 }
 
 .dark .text-\[\#5C554E\] {
-  color: #C4BCB5 !important;
+  color: #d4d4d8 !important;
 }
 
 .dark .text-\[\#555\] {
-  color: #C4BCB5 !important;
+  color: #d4d4d8 !important;
 }
 
 .dark .text-\[\#8C827A\] {
-  color: #A89F97 !important;
-}
-
-.dark .bg-\[\#FAF7F2\] {
-  background-color: #24211E !important;
-}
-
-.dark .bg-\[\#FAF7F2\]\/50 {
-  background-color: rgba(36, 33, 30, 0.5) !important;
-}
-
-.dark .hover\:bg-\[\#FAF7F2\]:hover {
-  background-color: #282421 !important;
-}
-
-.dark .hover\:bg-\[\#FAF7F2\]\/50:hover {
-  background-color: rgba(40, 36, 33, 0.55) !important;
-}
-
-.dark .border-\[\#EFE7DE\] {
-  border-color: #38332E !important;
-}
-
-.dark .divide-\[\#EFE7DE\] > :not([hidden]) ~ :not([hidden]) {
-  border-color: #38332E !important;
-}
-
-.dark .bg-white {
-  background-color: #1C1A18 !important;
-}
-
-.dark .bg-white\/80 {
-  background-color: rgba(28, 26, 24, 0.85) !important;
-}
-
-.dark .bg-\[\#F5F5F5\] {
-  background-color: #262320 !important;
-}
-
-.dark .border-\[\#E8E8E8\] {
-  border-color: #332F2B !important;
-}
-
-.dark .bg-rose-50\/70 {
-  background-color: rgba(68, 16, 22, 0.4) !important;
-  border-color: rgba(244, 63, 94, 0.35) !important;
-  color: #FDA4AF !important;
-}
-
-.dark .bg-amber-50\/60 {
-  background-color: rgba(77, 39, 4, 0.4) !important;
-  border-color: rgba(245, 158, 11, 0.35) !important;
-  color: #FCD34D !important;
-}
-
-.dark .text-rose-950 {
-  color: #FDA4AF !important;
-}
-
-.dark .text-amber-950 {
-  color: #FCD34D !important;
-}
-
-.dark .bg-\[\#FAFAFA\] {
-  background-color: #121110 !important;
-}
-
-.dark .hover\:bg-\[\#FAFAFA\]:hover {
-  background-color: #1C1A18 !important;
-}
-
-.dark .hover\:bg-white:hover {
-  background-color: #262320 !important;
-}
-
-.dark .bg-\[\#FFF4F0\] {
-  background-color: #2A1A14 !important;
-}
-
-.dark .border-\[\#FFD9CC\] {
-  border-color: #4A281E !important;
-}
-
-.dark .bg-\[\#FEF3C7\] {
-  background-color: rgba(217, 119, 6, 0.2) !important;
-}
-
-.dark .bg-\[\#D1FAE5\] {
-  background-color: rgba(5, 150, 105, 0.2) !important;
+  color: #a1a1aa !important;
 }
 
 .dark .text-\[\#999\] {
-  color: #8C827A !important;
+  color: #a1a1aa !important;
+}
+
+.dark .bg-\[\#FAF7F2\] {
+  background-color: #121215 !important;
+}
+
+.dark .bg-\[\#FAF7F2\]\/50 {
+  background-color: rgba(18, 18, 21, 0.6) !important;
+}
+
+.dark .hover\:bg-\[\#FAF7F2\]:hover {
+  background-color: #1c1c21 !important;
+}
+
+.dark .border-\[\#EFE7DE\] {
+  border-color: #27272a !important;
+}
+
+.dark .divide-\[\#EFE7DE\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #27272a !important;
+}
+
+.dark .bg-white {
+  background-color: #121215 !important;
+}
+
+.dark .bg-white\/80 {
+  background-color: rgba(18, 18, 21, 0.85) !important;
+}
+
+.dark .bg-\[\#F5F5F5\] {
+  background-color: #18181b !important;
+}
+
+.dark .border-\[\#E8E8E8\] {
+  border-color: #27272a !important;
 }
 
 .dark .border-\[\#D0D0D0\] {
-  border-color: #47423D !important;
+  border-color: #3f3f46 !important;
 }
 
+.dark .bg-\[\#FAFAFA\] {
+  background-color: #09090b !important;
+}
+
+.dark .hover\:bg-\[\#FAFAFA\]:hover {
+  background-color: #18181b !important;
+}
+
+.dark .hover\:bg-white:hover {
+  background-color: #1c1c21 !important;
+}
