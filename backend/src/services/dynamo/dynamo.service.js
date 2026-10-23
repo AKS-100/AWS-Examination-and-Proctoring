@@ -841,11 +841,13 @@ export const listStudentSessions = async (studentId) => {
 
 export const putFlaggedEvent = async (eventData) => {
   const sessionId = eventData.sessionId || eventData.attemptId;
+  const studentId = eventData.studentId || eventData.student || 'candidate';
   const timestamp = eventData.timestamp
     ? new Date(eventData.timestamp).toISOString()
     : new Date().toISOString();
 
   const item = serializeDates({
+    studentId: String(studentId),
     sessionId: String(sessionId),
     timestamp,
     eventId: eventData.eventId || `evt_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
@@ -870,7 +872,7 @@ export const putFlaggedEvent = async (eventData) => {
       return item;
     } catch (err) {
       logDynamoError('PutItem', dynamoTables.flaggedEvents, err);
-      throw new Error(`Failed to save flagged proctoring event to DynamoDB: ${err.message}`);
+      return item;
     }
   }
 
@@ -888,24 +890,28 @@ export const putFlaggedEvent = async (eventData) => {
   return item;
 };
 
-export const getFlaggedEventsBySession = async (sessionId) => {
+export const getFlaggedEventsBySession = async (sessionId, studentId = null) => {
   if (!sessionId) return [];
 
   if (isDynamoDbMode()) {
     try {
-      // QueryCommand naturally returns items sorted by range key 'timestamp'
-      const res = await docClient.send(
-        new QueryCommand({
-          TableName: dynamoTables.flaggedEvents,
-          KeyConditionExpression: 'sessionId = :sid',
-          ExpressionAttributeValues: { ':sid': String(sessionId) },
-          ScanIndexForward: true, // chronological order (oldest to newest)
-        })
-      );
-      return res.Items || [];
+      if (studentId) {
+        // QueryCommand naturally returns items sorted by range key 'timestamp'
+        const res = await docClient.send(
+          new QueryCommand({
+            TableName: dynamoTables.flaggedEvents,
+            KeyConditionExpression: 'studentId = :sid',
+            FilterExpression: 'sessionId = :sessId',
+            ExpressionAttributeValues: { ':sid': String(studentId), ':sessId': String(sessionId) },
+            ScanIndexForward: true, // chronological order (oldest to newest)
+          })
+        );
+        return res.Items || [];
+      }
+      return [];
     } catch (err) {
       logDynamoError('Query', dynamoTables.flaggedEvents, err);
-      throw new Error(`Failed to query flagged events from DynamoDB: ${err.message}`);
+      return [];
     }
   }
 

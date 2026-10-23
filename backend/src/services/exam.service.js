@@ -737,10 +737,18 @@ export const getAllTeacherAttempts = async (teacherId) => {
 
   return attempts.map((att) => {
     const matchedExam = examMap.get((att.exam || '').toString());
-    const events = Array.isArray(att.proctoringEvents) ? att.proctoringEvents : [];
-    const phoneCount = events.filter((e) => e.eventType === 'PHONE_DETECTED').length;
-    const multiFaceCount = events.filter((e) => e.eventType === 'MULTIPLE_FACES').length;
-    const tabCount = att.tabSwitchCount !== undefined ? att.tabSwitchCount : events.filter((e) => e.eventType === 'TAB_SWITCH').length;
+    const events = Array.isArray(att.proctoringEvents) && att.proctoringEvents.length > 0
+      ? att.proctoringEvents
+      : (Array.isArray(att.events) ? att.events : []);
+    const phoneCount = att.phoneDetectionCount !== undefined
+      ? att.phoneDetectionCount
+      : events.filter((e) => e.eventType === 'PHONE_DETECTED').length;
+    const multiFaceCount = att.multipleFaceCount !== undefined
+      ? att.multipleFaceCount
+      : events.filter((e) => e.eventType === 'MULTIPLE_FACES').length;
+    const tabCount = att.tabSwitchCount !== undefined
+      ? att.tabSwitchCount
+      : events.filter((e) => e.eventType === 'TAB_SWITCH').length;
 
     return {
       _id: att._id,
@@ -763,7 +771,9 @@ export const getAllTeacherAttempts = async (teacherId) => {
       fullscreenExitCount: att.fullscreenExitCount || 0,
       faceAbsenceCount: att.faceAbsenceCount || 0,
       phoneDetectedCount: phoneCount,
+      phoneDetectionCount: phoneCount,
       multiFaceCount: multiFaceCount,
+      multipleFaceCount: multiFaceCount,
       proctoringEvents: events,
       answers: att.answers || [],
       startTime: att.startTime,
@@ -924,6 +934,7 @@ export const recordProctoringEvent = async (
 
   if (isDynamoDbMode()) {
     await dynamoService.putFlaggedEvent({
+      studentId: attempt.studentId || attempt.student || studentId,
       sessionId: attemptId,
       timestamp: newEvent.timestamp,
       eventId: newEvent._id,
@@ -935,7 +946,7 @@ export const recordProctoringEvent = async (
       riskScoreAfter: newEvent.riskScoreAfter,
       evidenceS3Key: newEvent.evidenceS3Key,
       snapshotUrl: newEvent.snapshotUrl,
-    });
+    }).catch((err) => console.warn('[DynamoDB putFlaggedEvent notice]:', err.message));
     await dynamoService.putRiskScoreRecord({
       sessionId: attemptId,
       timestamp: newEvent.timestamp,
@@ -944,7 +955,7 @@ export const recordProctoringEvent = async (
       strikes: attempt.strikes || 0,
       escalated: Boolean(alertCheck.shouldAlert),
       reasons: [newEvent.details],
-    });
+    }).catch((err) => console.warn('[DynamoDB putRiskScoreRecord notice]:', err.message));
     await dynamoService.putSession(attempt);
   } else if (isMongoConnected()) {
     await attempt.save();
@@ -1198,7 +1209,8 @@ export const analyzeProctoringFrame = async (
         snapshotUrl: s3Upload?.url,
       });
 
-      attempt.proctoringEvents.push({
+      const multiFaceEvt = {
+        _id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
         eventType: 'MULTIPLE_FACES',
         timestamp: new Date(),
         confidence: faceConfidence,
@@ -1209,7 +1221,26 @@ export const analyzeProctoringFrame = async (
         details: `Multiple faces detected in examination viewport (${faceCount} people)`,
         evidenceS3Key: s3Key,
         snapshotUrl: s3Upload?.url || null,
-      });
+      };
+
+      attempt.proctoringEvents.push(multiFaceEvt);
+
+      if (isDynamoDbMode()) {
+        await dynamoService.putFlaggedEvent({
+          studentId: attempt.studentId || attempt.student,
+          sessionId: attemptId,
+          timestamp: multiFaceEvt.timestamp,
+          eventId: multiFaceEvt._id,
+          eventType: multiFaceEvt.eventType,
+          severity: multiFaceEvt.severity,
+          details: multiFaceEvt.details,
+          confidence: multiFaceEvt.confidence,
+          riskContribution: multiFaceEvt.riskContribution,
+          riskScoreAfter: multiFaceEvt.riskScoreAfter,
+          evidenceS3Key: multiFaceEvt.evidenceS3Key,
+          snapshotUrl: multiFaceEvt.snapshotUrl,
+        }).catch((err) => console.warn('[DynamoDB putFlaggedEvent notice]:', err.message));
+      }
     }
   }
 
@@ -1254,7 +1285,8 @@ export const analyzeProctoringFrame = async (
         snapshotUrl: s3Upload?.url,
       });
 
-      attempt.proctoringEvents.push({
+      const phoneEventItem = {
+        _id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
         eventType: 'PHONE_DETECTED',
         timestamp: new Date(),
         confidence: phoneConfidence,
@@ -1265,7 +1297,26 @@ export const analyzeProctoringFrame = async (
         details: `Prohibited mobile device confirmed in camera viewport (${phoneConfidence}% confidence)`,
         evidenceS3Key: s3Key,
         snapshotUrl: s3Upload?.url || null,
-      });
+      };
+
+      attempt.proctoringEvents.push(phoneEventItem);
+
+      if (isDynamoDbMode()) {
+        await dynamoService.putFlaggedEvent({
+          studentId: attempt.studentId || attempt.student,
+          sessionId: attemptId,
+          timestamp: phoneEventItem.timestamp,
+          eventId: phoneEventItem._id,
+          eventType: phoneEventItem.eventType,
+          severity: phoneEventItem.severity,
+          details: phoneEventItem.details,
+          confidence: phoneEventItem.confidence,
+          riskContribution: phoneEventItem.riskContribution,
+          riskScoreAfter: phoneEventItem.riskScoreAfter,
+          evidenceS3Key: phoneEventItem.evidenceS3Key,
+          snapshotUrl: phoneEventItem.snapshotUrl,
+        }).catch((err) => console.warn('[DynamoDB putFlaggedEvent notice]:', err.message));
+      }
     }
   } else {
     // Reset phone active state once removed from camera feed
@@ -1427,30 +1478,64 @@ export const getAttemptProctoringEvents = async (attemptId, user) => {
     throw new Error('Access denied: You cannot view this attempt telemetry');
   }
 
-  // If in DynamoDB mode, query FlaggedEvents in guaranteed chronological order
+  // Section 40: Attach short-lived presigned URLs for secure private S3 evidence viewing
+  const sessionEvents = Array.isArray(attempt.proctoringEvents) && attempt.proctoringEvents.length > 0
+    ? attempt.proctoringEvents
+    : (Array.isArray(attempt.events) ? attempt.events : []);
+
+  let combinedEvents = [...sessionEvents];
+
+  // If in DynamoDB mode, query FlaggedEvents in guaranteed chronological order and merge without losing events
   if (isDynamoDbMode()) {
-    const tableEvents = await dynamoService.getFlaggedEventsBySession(attemptId);
-    if (tableEvents && tableEvents.length > 0) {
-      attempt.proctoringEvents = tableEvents;
+    try {
+      const tableEvents = await dynamoService.getFlaggedEventsBySession(attemptId, attemptStudentId);
+      if (Array.isArray(tableEvents) && tableEvents.length > 0) {
+        const seen = new Set();
+        combinedEvents.forEach((ev) => {
+          const type = ev.eventType || ev.type || 'EVENT';
+          const time = new Date(ev.timestamp || ev.time || 0).getTime();
+          seen.add(`${type}_${Math.floor(time / 1000)}`);
+          if (ev._id || ev.eventId) seen.add(ev._id || ev.eventId);
+        });
+
+        for (const te of tableEvents) {
+          const type = te.eventType || te.type || 'EVENT';
+          const time = new Date(te.timestamp || te.time || 0).getTime();
+          const keyTime = `${type}_${Math.floor(time / 1000)}`;
+          const keyId = te._id || te.eventId;
+          if ((keyId && seen.has(keyId)) || seen.has(keyTime)) continue;
+          seen.add(keyTime);
+          if (keyId) seen.add(keyId);
+          combinedEvents.push(te);
+        }
+      }
+    } catch (err) {
+      console.warn('[DynamoDB FlaggedEvents query notice]:', err.message);
     }
   }
 
-  // Section 40: Attach short-lived presigned URLs for secure private S3 evidence viewing
+  combinedEvents.sort((a, b) => new Date(a.timestamp || a.time || 0) - new Date(b.timestamp || b.time || 0));
+  attempt.proctoringEvents = combinedEvents;
+
+  const rawEvents = combinedEvents;
+
   const timelineEvents = await Promise.all(
-    (attempt.proctoringEvents || []).map(async (e) => {
-      let presignedUrl = e.snapshotUrl;
-      const keyOrUrl = e.evidenceS3Key || e.snapshotUrl;
+    rawEvents.map(async (e) => {
+      let presignedUrl = e.snapshotUrl || e.evidenceUrl;
+      const keyOrUrl = e.evidenceS3Key || e.snapshotUrl || e.evidenceUrl;
       if (keyOrUrl) {
         try {
           const res = await getPresignedDownloadUrl(keyOrUrl);
           presignedUrl = res.downloadUrl;
         } catch (err) {
-          presignedUrl = e.snapshotUrl;
+          presignedUrl = e.snapshotUrl || e.evidenceUrl;
         }
       }
       return {
         ...e,
+        evidenceUrl: presignedUrl,
         presignedSnapshotUrl: presignedUrl,
+        snapshotUrl: presignedUrl,
       };
     })
   );

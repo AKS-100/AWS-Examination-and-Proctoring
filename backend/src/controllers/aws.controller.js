@@ -43,6 +43,37 @@ export const getS3PresignedUrlHandler = async (req, res, next) => {
 };
 
 /**
+ * POST /api/aws/s3/presigned-view-url
+ * GET  /api/aws/s3/presigned-view-url?key=...
+ * Generates an Amazon S3 presigned GET URL for securely viewing private evidence snapshots
+ */
+export const getS3PresignedViewUrlHandler = async (req, res, next) => {
+  try {
+    const rawKey = req.body?.key || req.query?.key || req.body?.url || req.query?.url;
+    if (!rawKey) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Missing S3 key or URL to view' },
+      });
+    }
+
+    const expiresIn = parseInt(req.body?.expiresIn || req.query?.expiresIn || 3600, 10);
+    const result = await s3.getPresignedDownloadUrl(rawKey, expiresIn);
+
+    res.json({
+      success: true,
+      data: {
+        downloadUrl: result.downloadUrl,
+        key: result.key,
+        mode: result.mode,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
  * POST /api/aws/s3/upload-snapshot
  * Uploads a base64 snapshot to Amazon S3
  */
@@ -291,6 +322,7 @@ export const cognitoResendCodeHandler = async (req, res, next) => {
 export default {
   getAwsStatusHandler,
   getS3PresignedUrlHandler,
+  getS3PresignedViewUrlHandler,
   uploadSnapshotHandler,
   detectFacesHandler,
   verifyCandidateIdentityHandler,

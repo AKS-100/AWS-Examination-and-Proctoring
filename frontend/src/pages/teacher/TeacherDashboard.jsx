@@ -32,6 +32,7 @@ import {
   Camera,
   Bell,
   Cpu,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -43,6 +44,7 @@ import {
   apiDeleteExam,
   apiGetExamAnalytics,
   apiGetAttemptProctoringEvents,
+  apiGetS3PresignedViewUrl,
 } from '../../services/api';
 
 export const TeacherDashboard = () => {
@@ -68,6 +70,8 @@ export const TeacherDashboard = () => {
   const [selectedAuditAttempt, setSelectedAuditAttempt] = useState(null);
   const [auditEvents, setAuditEvents] = useState([]);
   const [isAuditLoading, setIsAuditLoading] = useState(false);
+  const [openingEvidenceId, setOpeningEvidenceId] = useState(null);
+  const [expandedPreviewId, setExpandedPreviewId] = useState(null);
 
   // Creation form state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -153,6 +157,8 @@ export const TeacherDashboard = () => {
   const handleOpenAuditModal = async (attemptItem) => {
     setSelectedAuditAttempt(attemptItem);
     setIsAuditLoading(true);
+    setExpandedPreviewId(null);
+    setOpeningEvidenceId(null);
 
     // Initialize with existing proctoring events on the attempt item so events (such as mobile device detections) are immediately available
     const initialEvents = Array.isArray(attemptItem.proctoringEvents) && attemptItem.proctoringEvents.length > 0
@@ -183,6 +189,70 @@ export const TeacherDashboard = () => {
       console.error('Failed to load telemetry events:', err);
     } finally {
       setIsAuditLoading(false);
+    }
+  };
+
+  const handleViewEvidence = async (evt, evtIndex) => {
+    const rawUrl = evt.presignedSnapshotUrl || evt.evidenceUrl || evt.snapshotUrl;
+    const key = evt.evidenceS3Key || rawUrl;
+    if (!key && !rawUrl) return;
+
+    // If the URL already contains an active AWS signature, open directly
+    if (rawUrl && (rawUrl.includes('X-Amz-Signature=') || rawUrl.includes('Signature='))) {
+      window.open(rawUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    // Otherwise, request an on-demand presigned URL from the backend
+    setOpeningEvidenceId(evtIndex);
+    try {
+      const res = await apiGetS3PresignedViewUrl(key);
+      const downloadUrl = res.data?.data?.downloadUrl || res.data?.downloadUrl;
+      if (downloadUrl) {
+        setAuditEvents((prev) =>
+          prev.map((e, idx) =>
+            idx === evtIndex
+              ? { ...e, presignedSnapshotUrl: downloadUrl, evidenceUrl: downloadUrl, snapshotUrl: downloadUrl }
+              : e
+          )
+        );
+        window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        alert('Unable to generate secure S3 evidence link.');
+      }
+    } catch (err) {
+      console.error('Failed to get presigned evidence link:', err);
+      alert('Failed to load secure evidence frame from Amazon S3.');
+    } finally {
+      setOpeningEvidenceId(null);
+    }
+  };
+
+  const handleTogglePreview = async (evt, evtIndex) => {
+    if (expandedPreviewId === evtIndex) {
+      setExpandedPreviewId(null);
+      return;
+    }
+
+    setExpandedPreviewId(evtIndex);
+    const curUrl = evt.presignedSnapshotUrl || evt.evidenceUrl || evt.snapshotUrl;
+    if (!curUrl || !curUrl.includes('X-Amz-Signature=')) {
+      try {
+        const key = evt.evidenceS3Key || curUrl;
+        const res = await apiGetS3PresignedViewUrl(key);
+        const downloadUrl = res.data?.data?.downloadUrl || res.data?.downloadUrl;
+        if (downloadUrl) {
+          setAuditEvents((prev) =>
+            prev.map((e, idx) =>
+              idx === evtIndex
+                ? { ...e, presignedSnapshotUrl: downloadUrl, evidenceUrl: downloadUrl, snapshotUrl: downloadUrl }
+                : e
+            )
+          );
+        }
+      } catch (err) {
+        console.error('Failed to preview evidence image:', err);
+      }
     }
   };
 
@@ -1122,17 +1192,52 @@ export const TeacherDashboard = () => {
                           </span>
                         </div>
                         <p className="text-[11px] text-[#5C554E] leading-relaxed">{eventDesc}</p>
-                        {(evt.evidenceUrl || evt.presignedSnapshotUrl || evt.snapshotUrl) && (
-                          <div className="pt-1.5">
-                            <a
-                              href={evt.evidenceUrl || evt.presignedSnapshotUrl || evt.snapshotUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="btn-warm-secondary text-[10px] py-1 px-3 inline-flex items-center gap-1.5"
+                        {(evt.evidenceUrl || evt.presignedSnapshotUrl || evt.snapshotUrl || evt.evidenceS3Key) && (
+                          <div className="pt-2 flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleViewEvidence(evt, idx)}
+                              disabled={openingEvidenceId === idx}
+                              className="btn-warm-secondary text-[10px] py-1 px-3 inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
                             >
-                              <span>View Captured Frame Evidence (S3)</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
+                              {openingEvidenceId === idx ? (
+                                <>
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  <span>Authorizing S3 Link...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>View Captured Frame Evidence (S3)</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleTogglePreview(evt, idx)}
+                              className="text-[10px] text-[#D96B4C] hover:text-[#B85336] font-bold px-2 py-1 underline cursor-pointer"
+                            >
+                              {expandedPreviewId === idx ? 'Hide Snapshot' : 'Inline Preview'}
+                            </button>
+                          </div>
+                        )}
+
+                        {expandedPreviewId === idx && (
+                          <div className="mt-2.5 p-2 bg-stone-900 rounded-xl overflow-hidden shadow-inner">
+                            {evt.presignedSnapshotUrl && evt.presignedSnapshotUrl.includes('X-Amz-Signature=') ? (
+                              <img
+                                src={evt.presignedSnapshotUrl}
+                                alt="S3 Proctoring Evidence Frame"
+                                className="w-full max-h-56 object-contain rounded-lg border border-stone-700 bg-black/40"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="py-6 text-center text-xs text-stone-300 flex items-center justify-center gap-2">
+                                <Loader2 className="w-4 h-4 animate-spin text-[#D96B4C]" />
+                                <span>Authorizing AWS S3 evidence frame...</span>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

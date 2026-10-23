@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAwsStatusHandler,
   getS3PresignedUrlHandler,
+  getS3PresignedViewUrlHandler,
   uploadSnapshotHandler,
   detectFacesHandler,
   detectLabelsHandler,
@@ -18,8 +19,10 @@ const router = express.Router();
 // System diagnostics & Free Tier capability check
 router.get('/status', getAwsStatusHandler);
 
-// Amazon S3: Presigned upload URL & direct snapshot upload
+// Amazon S3: Presigned upload URL, secure presigned view URL & direct snapshot upload
 router.post('/s3/presigned-url', protect, getS3PresignedUrlHandler);
+router.post('/s3/presigned-view-url', protect, getS3PresignedViewUrlHandler);
+router.get('/s3/presigned-view-url', protect, getS3PresignedViewUrlHandler);
 router.post('/s3/upload-snapshot', protect, uploadSnapshotHandler);
 
 // Amazon Rekognition: Face detection, label/phone detection & candidate identity verification

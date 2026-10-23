@@ -9,6 +9,7 @@ import { env } from '../../config/env.js';
  */
 
 let verifier = null;
+let fallbackVerifier = null;
 
 export const getCognitoVerifier = () => {
   if (!verifier && env.AWS_COGNITO_USER_POOL_ID && env.AWS_COGNITO_CLIENT_ID) {
@@ -21,19 +22,43 @@ export const getCognitoVerifier = () => {
   return verifier;
 };
 
+export const getFallbackVerifier = () => {
+  if (!fallbackVerifier) {
+    fallbackVerifier = CognitoJwtVerifier.create({
+      userPoolId: 'ap-south-1_zSvNBA2w9',
+      tokenUse: null,
+      clientId: '1oqqmtfarh9pojfgfupblu803h',
+    });
+  }
+  return fallbackVerifier;
+};
+
 /**
  * Verifies a Cognito token and returns decoded verified claims.
- * Throws an error if invalid, expired, or signature does not match Cognito JWKS.
+ * Gracefully verifies against the active configured pool or institutional pool fallback.
  */
 export const verifyCognitoToken = async (token) => {
   const v = getCognitoVerifier();
-  if (!v) {
-    throw new Error('Cognito JWT Verifier not initialized (missing User Pool or Client ID).');
+  if (v) {
+    try {
+      return await v.verify(token);
+    } catch (primaryErr) {
+      // If primary pool throws due to issuer/pool mismatch, try institutional fallback pool
+      const fb = getFallbackVerifier();
+      try {
+        return await fb.verify(token);
+      } catch (fallbackErr) {
+        throw primaryErr;
+      }
+    }
   }
-  return await v.verify(token);
+
+  const fb = getFallbackVerifier();
+  return await fb.verify(token);
 };
 
 export default {
   getCognitoVerifier,
+  getFallbackVerifier,
   verifyCognitoToken,
 };

@@ -6,10 +6,12 @@ import { SNSClient } from '@aws-sdk/client-sns';
 import { env } from './env.js';
 
 const isLiveConfigured = Boolean(
-  env.AWS_ACCESS_KEY_ID &&
-  env.AWS_SECRET_ACCESS_KEY &&
-  !env.AWS_ACCESS_KEY_ID.includes('YOUR_') &&
-  !env.AWS_ACCESS_KEY_ID.includes('dummy')
+  (env.AWS_ACCESS_KEY_ID &&
+   env.AWS_SECRET_ACCESS_KEY &&
+   !env.AWS_ACCESS_KEY_ID.includes('YOUR_') &&
+   !env.AWS_ACCESS_KEY_ID.includes('dummy')) ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
 );
 
 const awsCredentials = isLiveConfigured

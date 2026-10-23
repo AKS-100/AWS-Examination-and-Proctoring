@@ -161,6 +161,7 @@ export const apiGetAttemptProctoringEvents = async (attemptId) => apiClient.get(
 
 export const apiGetAwsStatus = async () => apiClient.get('/aws/status');
 export const apiGetS3PresignedUrl = async (key, contentType = 'image/jpeg') => apiClient.post('/aws/s3/presigned-url', { key, contentType });
+export const apiGetS3PresignedViewUrl = async (keyOrUrl) => apiClient.post('/aws/s3/presigned-view-url', { key: keyOrUrl });
 export const apiUploadSnapshotToS3 = async (imageBase64, key) => apiClient.post('/aws/s3/upload-snapshot', { imageBase64, key });
 export const apiRekognitionDetectFaces = async (imageBase64, simulateAnomaly = null) => apiClient.post('/aws/rekognition/detect-faces', { imageBase64, simulateAnomaly });
 export const apiRekognitionDetectLabels = async (imageBase64, options = {}) => apiClient.post('/aws/rekognition/detect-labels', { imageBase64, ...options });

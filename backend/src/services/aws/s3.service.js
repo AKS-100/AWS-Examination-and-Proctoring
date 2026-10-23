@@ -147,7 +147,7 @@ export const getPresignedDownloadUrl = async (key, expiresInSeconds = 3600) => {
     }
   }
 
-  if (isAwsConfigured() && s3Client && cleanKey) {
+  if ((isAwsConfigured() || s3Client) && s3Client && cleanKey) {
     try {
       const command = new GetObjectCommand({
         Bucket: awsConfig.s3Bucket,
