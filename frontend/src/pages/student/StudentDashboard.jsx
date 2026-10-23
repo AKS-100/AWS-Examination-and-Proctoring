@@ -176,8 +176,8 @@ export const StudentDashboard = () => {
             to="/student"
             className={`px-4 py-2 rounded-full transition-all ${
               isOverview
-                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
             }`}
           >
             Arena Overview
@@ -186,8 +186,8 @@ export const StudentDashboard = () => {
             to="/student/available"
             className={`px-4 py-2 rounded-full transition-all ${
               isAvailableView
-                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
             }`}
           >
             Available Tests ({availableExams.length})
@@ -196,8 +196,8 @@ export const StudentDashboard = () => {
             to="/student/results"
             className={`px-4 py-2 rounded-full transition-all ${
               isResultsView
-                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
             }`}
           >
             Assessment Results ({pastAttempts.length})
@@ -206,8 +206,8 @@ export const StudentDashboard = () => {
             to="/student/profile"
             className={`px-4 py-2 rounded-full transition-all ${
               isProfileView
-                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+                ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
             }`}
           >
             Candidate Profile
@@ -522,7 +522,7 @@ export const StudentDashboard = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
                 {/* Camera Status */}
-                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
+                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
                       <Camera className="w-4 h-4" />
@@ -538,7 +538,7 @@ export const StudentDashboard = () => {
                 </div>
 
                 {/* Mic Status */}
-                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
+                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
                       <Mic className="w-4 h-4" />
@@ -554,7 +554,7 @@ export const StudentDashboard = () => {
                 </div>
 
                 {/* Connection Status */}
-                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
+                <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
                       <Wifi className="w-4 h-4" />
@@ -599,7 +599,7 @@ export const StudentDashboard = () => {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 grid grid-cols-2 gap-2 text-center">
+              <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 grid grid-cols-2 gap-2 text-center">
                 <div>
                   <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold block uppercase">Total Exams</span>
                   <span className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">{availableExams.length}</span>
@@ -642,7 +642,7 @@ export const StudentDashboard = () => {
                     return (
                       <div
                         key={att._id}
-                        className="p-3.5 rounded-[22px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between hover:bg-white dark:hover:bg-zinc-800 transition-all shadow-xs"
+                        className="p-3.5 rounded-[22px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between hover:bg-white dark:hover:bg-zinc-800/80 transition-all shadow-xs"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center font-bold text-xs flex-shrink-0 ${
@@ -684,8 +684,8 @@ export const StudentDashboard = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-                  <div className="w-8 h-8 rounded-[12px] bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
+                <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="w-8 h-8 rounded-[12px] bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
                     <Camera className="w-4 h-4" />
                   </div>
                   <div>
@@ -694,8 +694,8 @@ export const StudentDashboard = () => {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-                  <div className="w-8 h-8 rounded-[12px] bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
+                <div className="p-3.5 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+                  <div className="w-8 h-8 rounded-[12px] bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-xs">
                     <Lock className="w-4 h-4" />
                   </div>
                   <div>
@@ -733,7 +733,7 @@ export const StudentDashboard = () => {
           ) : (
             <div className="overflow-x-auto rounded-[24px] border border-zinc-200 dark:border-zinc-800">
               <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-50 dark:bg-zinc-850/80 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-semibold">
+                <thead className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-semibold">
                   <tr>
                     <th className="py-3.5 px-4">Examination</th>
                     <th className="py-3.5 px-4">Score</th>
@@ -792,22 +792,22 @@ export const StudentDashboard = () => {
           </div>
 
           <div className="space-y-4 text-xs">
-            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 block">Full Name</span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{user?.name || 'Student Candidate'}</span>
             </div>
 
-            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 block">Email Address</span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{user?.email || 'student@university.edu'}</span>
             </div>
 
-            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 block">Student Registration ID</span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{user?.studentId || 'CS-2026-REG'}</span>
             </div>
 
-            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-[20px] bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 block">Academic Department</span>
               <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{user?.department || 'Department of Computer Science'}</span>
             </div>

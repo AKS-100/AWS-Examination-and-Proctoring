@@ -382,8 +382,8 @@ export const TeacherDashboard = () => {
           to="/teacher"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isOverview
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           Dashboard Overview
@@ -392,8 +392,8 @@ export const TeacherDashboard = () => {
           to="/teacher/exams"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isExamsView
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           My Exams ({exams.length})
@@ -402,8 +402,8 @@ export const TeacherDashboard = () => {
           to="/teacher/create-exam"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isCreateExamView
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           Create Exam
@@ -412,8 +412,8 @@ export const TeacherDashboard = () => {
           to="/teacher/results"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isResultsView
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           Student Results ({attempts.length})
@@ -422,8 +422,8 @@ export const TeacherDashboard = () => {
           to="/teacher/reports"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isReportsView
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           Proctoring Reports ({reviewFlagsCount} flagged)
@@ -432,8 +432,8 @@ export const TeacherDashboard = () => {
           to="/teacher/profile"
           className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
             isProfileView
-              ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-xs'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60'
+              ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
           }`}
         >
           Faculty Profile
@@ -661,7 +661,7 @@ export const TeacherDashboard = () => {
                     return (
                       <div
                         key={att._id}
-                        className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3 transition-colors hover:bg-white dark:hover:bg-zinc-800"
+                        className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3 transition-colors hover:bg-white dark:hover:bg-zinc-800/80"
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ${
@@ -799,7 +799,7 @@ export const TeacherDashboard = () => {
                   value={newExamForm.title}
                   onChange={(e) => setNewExamForm({ ...newExamForm, title: e.target.value })}
                   placeholder="e.g. Distributed Computing & Cloud Systems"
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850/60 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
                   required
                 />
               </div>
@@ -811,7 +811,7 @@ export const TeacherDashboard = () => {
                   value={newExamForm.courseCode}
                   onChange={(e) => setNewExamForm({ ...newExamForm, courseCode: e.target.value })}
                   placeholder="e.g. CS-402"
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850/60 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
                   required
                 />
               </div>
@@ -826,7 +826,7 @@ export const TeacherDashboard = () => {
                   max="180"
                   value={newExamForm.durationMinutes}
                   onChange={(e) => setNewExamForm({ ...newExamForm, durationMinutes: Number(e.target.value) })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850/60 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
                   required
                 />
               </div>
@@ -838,7 +838,7 @@ export const TeacherDashboard = () => {
                   min="1"
                   value={newExamForm.passingMarks}
                   onChange={(e) => setNewExamForm({ ...newExamForm, passingMarks: Number(e.target.value) })}
-                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850/60 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
                   required
                 />
               </div>
@@ -851,7 +851,7 @@ export const TeacherDashboard = () => {
                 onChange={(e) => setNewExamForm({ ...newExamForm, description: e.target.value })}
                 placeholder="Brief summary of examination topics and competencies."
                 rows="2"
-                className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850/60 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
+                className="w-full px-4 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 focus:bg-white dark:focus:bg-zinc-900"
               />
             </div>
 
@@ -874,7 +874,7 @@ export const TeacherDashboard = () => {
 
               <div className="space-y-4">
                 {newExamForm.questions.map((q, qIdx) => (
-                  <div key={qIdx} className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-3">
+                  <div key={qIdx} className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">Item #{qIdx + 1}</span>
                       {newExamForm.questions.length > 1 && (
@@ -959,7 +959,7 @@ export const TeacherDashboard = () => {
           ) : (
             <div className="card-clay overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-50 dark:bg-zinc-850/80 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold">
+                <thead className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold">
                   <tr>
                     <th className="py-3 px-4">Student</th>
                     <th className="py-3 px-4">Examination</th>
@@ -970,7 +970,7 @@ export const TeacherDashboard = () => {
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                   {attempts.map((att) => (
-                    <tr key={att._id} className="hover:bg-zinc-50 dark:hover:bg-zinc-850/50 transition-colors">
+                    <tr key={att._id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <td className="py-3.5 px-4 font-bold text-zinc-900 dark:text-zinc-100">
                         <div>{att.student?.name || att.studentName || 'Student Candidate'}</div>
                         <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">{att.student?.email || 'candidate@university.edu'}</span>
@@ -1017,7 +1017,7 @@ export const TeacherDashboard = () => {
           ) : (
             <div className="card-clay overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-50 dark:bg-zinc-850/80 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold">
+                <thead className="bg-zinc-50 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-bold">
                   <tr>
                     <th className="py-3.5 px-4">Student & Exam</th>
                     <th className="py-3.5 px-4">Risk Score</th>
@@ -1035,7 +1035,7 @@ export const TeacherDashboard = () => {
                     const audioAnomalies = att.audioAnomalyCount || (att.proctoringEvents || []).filter((e) => (e.eventType || e.type) === 'AUDIO_ANOMALY').length;
 
                     return (
-                      <tr key={att._id} className="hover:bg-zinc-50 dark:hover:bg-zinc-850/50 transition-colors">
+                      <tr key={att._id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-zinc-900 dark:text-zinc-100">
                           <div>{att.student?.name || att.studentName || 'Student Candidate'}</div>
                           <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">{att.exam?.title || 'Exam'}</span>
@@ -1082,17 +1082,17 @@ export const TeacherDashboard = () => {
           </div>
 
           <div className="space-y-4 text-xs">
-            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 block">Faculty Name</span>
               <span className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{user?.name || 'Faculty Member'}</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 block">Email Address</span>
               <span className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{user?.email || 'teacher@university.edu'}</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
               <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 block">Department</span>
               <span className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">{user?.department || 'Department of Computer Science'}</span>
             </div>
@@ -1122,7 +1122,7 @@ export const TeacherDashboard = () => {
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/80 dark:border-zinc-800 grid grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800 grid grid-cols-2 gap-4 text-xs">
               <div>
                 <span className="text-zinc-500 dark:text-zinc-400 font-bold block">Calibrated Risk Score</span>
                 <span className={`text-base font-extrabold ${
@@ -1150,7 +1150,7 @@ export const TeacherDashboard = () => {
               {isAuditLoading ? (
                 <div className="py-8 text-center text-xs text-zinc-500 dark:text-zinc-400">Loading timeline events...</div>
               ) : auditEvents.length === 0 ? (
-                <div className="py-6 text-center text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-850/60 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
+                <div className="py-6 text-center text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/70 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
                   No suspicious violations recorded during this examination session.
                 </div>
               ) : (
@@ -1168,7 +1168,7 @@ export const TeacherDashboard = () => {
                             ? 'bg-rose-50/70 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 text-rose-950 dark:text-rose-200'
                             : severity === 'warning'
                             ? 'bg-amber-50/60 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 text-amber-950 dark:text-amber-200'
-                            : 'bg-zinc-50 dark:bg-zinc-850/60 border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100'
+                            : 'bg-zinc-50 dark:bg-zinc-900/70 border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100'
                         }`}
                       >
                         <div className="flex items-center justify-between font-bold">

@@ -97,21 +97,18 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
                     onClick={() => setIsOpen(false)}
                     className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-800 dark:text-white dark:border dark:border-zinc-700/60 shadow-xs'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900/60'
                     }`}
                   >
                     <Icon
                       className={`w-4 h-4 transition-colors ${
                         isActive
-                          ? 'text-white dark:text-zinc-950'
+                          ? 'text-white'
                           : 'text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white'
                       }`}
                     />
                     <span className="flex-1 truncate">{item.name}</span>
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-zinc-950 opacity-90" />
-                    )}
                   </NavLink>
                 );
               })}

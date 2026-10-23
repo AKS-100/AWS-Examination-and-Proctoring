@@ -144,14 +144,11 @@ export const RegisterPage = () => {
       <div className="w-full max-w-[420px] space-y-6">
 
         {/* Page Title */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 mx-auto shadow-md transition-transform hover:scale-105 border border-zinc-700/40">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        <div className="text-center space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
             {isVerificationStep ? 'Verify your email' : 'Create an account'}
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             {isVerificationStep
               ? `Enter the code sent to ${email}`
               : 'Get started with AdaptiveExam'}
@@ -168,42 +165,30 @@ export const RegisterPage = () => {
                 <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block">
                   I am registering as
                 </label>
-                <div className="grid grid-cols-2 p-1 bg-zinc-100 dark:bg-zinc-850 rounded-xl border border-zinc-200 dark:border-zinc-800 gap-1">
+                <div className="grid grid-cols-2 p-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 gap-1.5">
                   <button
                     type="button"
                     onClick={() => setRole('student')}
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'student'
-                        ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                        ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
-                    <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
-                      role === 'student'
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                        : 'bg-transparent text-current'
-                    }`}>
-                      <GraduationCap className="w-4 h-4" />
-                    </span>
+                    <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 dark:text-zinc-500'}`} />
                     <span>Student</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setRole('teacher')}
-                    className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       role === 'teacher'
-                        ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                        ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     }`}
                   >
-                    <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
-                      role === 'teacher'
-                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                        : 'bg-transparent text-current'
-                    }`}>
-                      <Briefcase className="w-4 h-4" />
-                    </span>
+                    <Briefcase className={`w-4 h-4 ${role === 'teacher' ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 dark:text-zinc-500'}`} />
                     <span>Teacher</span>
                   </button>
                 </div>
@@ -343,8 +328,8 @@ export const RegisterPage = () => {
           ) : (
             /* Verification Screen */
             <div className="space-y-4">
-              <div className="p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-zinc-800 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <span>

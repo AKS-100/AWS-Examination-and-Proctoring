@@ -49,7 +49,6 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
             <span className="font-extrabold text-xl tracking-tight text-zinc-900 dark:text-white transition-colors">
               Adaptive<span className="font-normal text-zinc-400 dark:text-zinc-500 ml-0.5">Exam</span>
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900 dark:bg-zinc-100 opacity-60 self-baseline mt-3" />
           </Link>
         </div>
 

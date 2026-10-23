@@ -250,14 +250,11 @@ export const LoginPage = () => {
       <div className="w-full max-w-[420px] space-y-6">
 
         {/* Page Title */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 mx-auto shadow-md transition-transform hover:scale-105 border border-zinc-700/40">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">
+        <div className="text-center space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
             Welcome back
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             Sign in to your account to continue.
           </p>
         </div>
@@ -270,42 +267,30 @@ export const LoginPage = () => {
             <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 block">
               I am a
             </label>
-            <div className="grid grid-cols-2 p-1.5 bg-zinc-100 dark:bg-zinc-850 rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <div className="grid grid-cols-2 p-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 gap-1.5">
               <button
                 type="button"
                 onClick={() => handleRoleChange('student')}
-                className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+                className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   !isTeacher
-                    ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
                     : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
-                <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
-                  !isTeacher
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}>
-                  <GraduationCap className="w-3.5 h-3.5" />
-                </div>
+                <GraduationCap className={`w-4 h-4 ${!isTeacher ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 dark:text-zinc-500'}`} />
                 <span>Student</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleRoleChange('teacher')}
-                className={`py-2 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+                className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   isTeacher
-                    ? 'bg-white dark:bg-zinc-750 text-zinc-900 dark:text-white shadow-xs border border-zinc-200 dark:border-zinc-700'
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs border border-zinc-200/80 dark:border-zinc-700/60'
                     : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                 }`}
               >
-                <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors ${
-                  isTeacher
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}>
-                  <Briefcase className="w-3.5 h-3.5" />
-                </div>
+                <Briefcase className={`w-4 h-4 ${isTeacher ? 'text-zinc-900 dark:text-white' : 'text-zinc-400 dark:text-zinc-500'}`} />
                 <span>Teacher</span>
               </button>
             </div>
