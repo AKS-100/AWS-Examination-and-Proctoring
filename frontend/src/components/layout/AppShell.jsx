@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import MouseGlow from '../common/MouseGlow';
 import { checkHealth } from '../../services/api';
 
 export const AppShell = () => {
@@ -56,7 +57,10 @@ export const AppShell = () => {
   const showSidebar = (isTeacher || isStudent) && !isExamArena && !isAuthPage;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#121110] text-[#1A1A1A] dark:text-[#FAF7F2] font-sans antialiased transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#121110] text-[#1A1A1A] dark:text-[#FAF7F2] font-sans antialiased transition-colors relative">
+      {/* Aesthetic Mouse Pointer Glow Effect */}
+      <MouseGlow />
+
       {/* Top Navigation */}
       <Navbar
         healthStatus={healthStatus}

@@ -300,7 +300,7 @@ export const LoginPage = () => {
           {formError && (
             <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />
-              <div className="flex-1">
+              <div className="flex-1 text-xs sm:text-sm">
                 <span>{formError}</span>
                 {formError.includes('unconfirmed') && (
                   <button
@@ -322,7 +322,7 @@ export const LoginPage = () => {
           {formSuccess && (
             <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2.5">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
-              <span>{formSuccess}</span>
+              <span className="text-xs sm:text-sm">{formSuccess}</span>
             </div>
           )}
 
