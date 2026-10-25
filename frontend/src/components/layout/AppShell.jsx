@@ -57,7 +57,7 @@ export const AppShell = () => {
   const showSidebar = (isTeacher || isStudent) && !isExamArena && !isAuthPage;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA] dark:bg-[#121110] text-[#1A1A1A] dark:text-[#FAF7F2] font-sans antialiased transition-colors relative">
+    <div className="min-h-screen flex flex-col bg-[#fdf6e3] dark:bg-[#1a1b26] text-[#073642] dark:text-[#c0caf5] font-sans antialiased transition-colors relative">
       {/* Aesthetic Mouse Pointer Glow Effect */}
       <MouseGlow />
 

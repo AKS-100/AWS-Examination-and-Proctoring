@@ -143,15 +143,20 @@ export const RegisterPage = () => {
     <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6">
       <div className="w-full max-w-[420px] space-y-6">
 
-        {/* Page Title */}
-        <div className="text-center space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+        {/* Brand Logo & Page Title */}
+        <div className="text-center space-y-2">
+          <Link to="/" className="inline-flex items-center gap-1 group select-none">
+            <span className="font-extrabold text-2xl tracking-tight text-[#073642] dark:text-[#c0caf5] transition-colors">
+              Adaptive<span className="font-semibold text-[#581c87] dark:text-[#7aa2f7] ml-0.5 transition-colors">Exam</span>
+            </span>
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#073642] dark:text-[#c0caf5] tracking-tight">
             {isVerificationStep ? 'Verify your email' : 'Create an account'}
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs sm:text-sm text-[#586e75] dark:text-[#a9b1d6]">
             {isVerificationStep
               ? `Enter the code sent to ${email}`
-              : 'Get started with AdaptiveExam'}
+              : 'Get started with your proctored assessment arena'}
           </p>
         </div>
 

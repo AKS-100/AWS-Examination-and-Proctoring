@@ -43,3 +43,7 @@ Thumbs.db
 
 
 AWS_Deployment_Guide.md
+~$*
+backend/login-test.json
+backend/response.json
+backend/test-payload.json

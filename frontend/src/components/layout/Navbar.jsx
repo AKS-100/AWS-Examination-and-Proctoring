@@ -30,7 +30,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/85 dark:bg-[#09090b]/85 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 px-4 sm:px-6 lg:px-8 py-2.5 transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-[#fdf6e3]/90 dark:bg-[#16161e]/90 backdrop-blur-md border-b border-[#dfd5be] dark:border-[#292e42] px-4 sm:px-6 lg:px-8 py-2.5 transition-colors">
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
         {/* Left: Brand Wordmark (No icon, clean typography inspired by reference) */}
         <div className="flex items-center gap-3">
@@ -46,8 +46,8 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
           )}
 
           <Link to="/" className="flex items-center gap-1.5 group select-none">
-            <span className="font-extrabold text-xl tracking-tight text-zinc-900 dark:text-white transition-colors">
-              Adaptive<span className="font-normal text-zinc-400 dark:text-zinc-500 ml-0.5">Exam</span>
+            <span className="font-extrabold text-xl tracking-tight text-[#073642] dark:text-[#c0caf5] transition-colors">
+              Adaptive<span className="font-semibold text-[#581c87] dark:text-[#7aa2f7] ml-0.5 transition-colors">Exam</span>
             </span>
           </Link>
         </div>
@@ -117,7 +117,7 @@ export const Navbar = ({ healthStatus, onRefreshHealth, isSidebarOpen, setIsSide
               }}
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#09090b]" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-[#fdf6e3] dark:ring-[#16161e]" />
             </button>
           )}
 

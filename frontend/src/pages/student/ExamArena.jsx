@@ -631,9 +631,9 @@ export const ExamArena = () => {
   const answeredCount = Object.values(answersState).filter((a) => a.selectedOptionIndex !== null && a.selectedOptionIndex !== undefined).length;
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex flex-col">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[#1a1b26] text-[#073642] dark:text-[#c0caf5] flex flex-col">
       {/* Top Fixed Exam Control Header */}
-      <header className="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 shadow-xs px-4 sm:px-6 py-3">
+      <header className="sticky top-0 z-30 bg-[#fefcf6]/90 dark:bg-[#16161e]/90 backdrop-blur-md border-b border-[#dfd5be] dark:border-[#292e42] shadow-xs px-4 sm:px-6 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Exam Title & Course Code */}

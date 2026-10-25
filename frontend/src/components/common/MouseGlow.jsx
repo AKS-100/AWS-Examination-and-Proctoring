@@ -99,15 +99,15 @@ export const MouseGlow = () => {
           background: isDark
             ? `radial-gradient(
                 circle,
-                rgba(59, 130, 246, 0.12) 0%,
-                rgba(99, 102, 241, 0.06) 40%,
-                rgba(147, 51, 234, 0.02) 60%,
+                rgba(122, 162, 247, 0.14) 0%,
+                rgba(187, 154, 247, 0.07) 40%,
+                rgba(125, 207, 255, 0.02) 60%,
                 transparent 75%
               )`
             : `radial-gradient(
                 circle,
-                rgba(37, 99, 235, 0.07) 0%,
-                rgba(59, 130, 246, 0.03) 40%,
+                rgba(38, 139, 210, 0.08) 0%,
+                rgba(108, 113, 196, 0.04) 40%,
                 transparent 70%
               )`,
           filter: isDark ? 'blur(24px)' : 'blur(20px)',

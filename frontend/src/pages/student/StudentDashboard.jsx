@@ -235,8 +235,8 @@ export const StudentDashboard = () => {
           {/* Main Left Workspace (8 cols) */}
           <div className="xl:col-span-8 space-y-6">
             
-            {/* Editorial Luxury Hero Banner (Inspired by Reference Image) */}
-            <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-zinc-900 via-zinc-950 to-black p-7 sm:p-9 text-white border border-zinc-800 shadow-xl">
+            {/* Editorial Luxury Hero Banner */}
+            <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#001f27] text-[#fdf6e3] border border-[#002b36]/40 dark:from-[#16161e] dark:via-[#1a1b26] dark:to-[#24283b] dark:border-[#292e42] dark:text-[#c0caf5] p-7 sm:p-9 shadow-xl">
               {/* Subtle ambient lighting */}
               <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-zinc-700/20 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-16 left-1/4 w-60 h-60 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
